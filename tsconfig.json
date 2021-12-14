@@ -1,0 +1,62 @@
+{
+	"compilerOptions": {
+		"baseUrl": "./src",
+		"outDir": "./build",
+		"skipLibCheck": true,
+		"sourceMap": true,
+		"strictNullChecks": true,
+		"module": "CommonJS",
+		"target": "ES6",
+		"jsx": "react",
+		"allowJs": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"checkJs": true,
+		"allowSyntheticDefaultImports": true,
+		"moduleResolution": "node",
+		"noImplicitAny": true,
+		"removeComments": true,
+		"suppressImplicitAnyIndexErrors": true,
+		"paths": {
+			"Components/*": [
+				"components/*"
+			],
+			"Beta/*": [
+				"components/beta/*"
+			],
+			"Scripts/*": [
+				"scripts/*"
+			],
+			"Hooks/*": [
+				"hooks/*"
+			],
+			"Classes/*": [
+				"classes/*"
+			],
+			"Assets/*": [
+				"assets/*"
+			],
+			"Reducers/*": [
+				"__reducers/*"
+			],
+			"Actions/*": [
+				"__actions/*"
+			],
+			"Types/*": [
+				"__types/*"
+			],
+		},
+	},
+	"typescript": {
+		"preferences": {
+			"importModuleSpecifier": "non-relative"
+		}
+	},
+	"include": [
+		"./src/**/*"
+	],
+	"exclude": [
+		"node_modules",
+		"build"
+	],
+}

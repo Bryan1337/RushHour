@@ -1,0 +1,18 @@
+{
+    "editor.showUnused": true,
+    "typescript.implementationsCodeLens.enabled": true,
+    "[javascript]": {
+        "editor.showUnused": true
+    },
+    "[javascriptreact]": {
+        "editor.showUnused": true
+    },
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+    },
+    "search.exclude": {
+        "**/node_modules": true,
+        "*.bundle.js": true,
+        "*-bundle.js": true
+    }
+}

@@ -1,0 +1,13 @@
+node_modules
+build_scores/*
+build_addin_slides/*
+build/*
+cypress/videos
+cypress/screenshots
+cypress/downloads
+.env
+coverage
+error.log
+package-lock.json
+.DS_Store
+
