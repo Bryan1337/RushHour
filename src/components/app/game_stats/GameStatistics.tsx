@@ -1,42 +1,44 @@
 import { Button, Grid, Paper, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import Solver from 'Classes/solver/Solver';
-import 'Components/app/App.css';
 import { useAppTiles } from 'Hooks/useAppTiles';
-import { useGame } from 'Hooks/useGame';
 import { useInterval } from 'Hooks/useInterval';
-import { cloneDeep } from 'lodash';
+import { isEmpty } from 'lodash';
 import React from 'react';
 import { RootStateOrAny, useSelector } from 'react-redux';
-import { GameState } from 'Types/gameTypes';
+import { CreateGameProperties, GameState } from 'Types/gameTypes';
+
 
 const GameStatistics = () => {
 
 	const gameState: GameState = useSelector((state: RootStateOrAny) => state.gameReducer);
 
 	const {
+		moveVehicle,
+		selectVehicle,
+		setTurnQueue,
 		undoLastMove,
 		redoLastMove,
-		moveVehicle,
-		setTurnQueue,
 	} = useAppTiles();
 
 	const {
-		createGameFromAppTiles
-	} = useGame();
-
-	const {
 		moveCounter,
+		vehicles,
+		gridSize,
+		turnQueue,
 		undoQueue,
 		redoQueue,
-		turnQueue,
-		gameAppTiles,
+		walls,
 	} = gameState;
 
 
 	const solveGame = () => {
 
-		const game = createGameFromAppTiles(gameAppTiles);
+		const game: CreateGameProperties = {
+			vehicles,
+			gridSize,
+			walls,
+		}
 
 		const solver = new Solver(game);
 
@@ -44,28 +46,29 @@ const GameStatistics = () => {
 
 		const turns = solver.getWinningTurns();
 
-		console.log(turns);
-		// setTurnQueue(turns);
+		setTurnQueue(turns);
+	}
+
+	const handleTurn = () => {
+
+		const [ firstTurn ] = turnQueue;
+
+		const { vehicle, toX, toY } = firstTurn;
+
+		const newTurns = [...turnQueue].filter((_, index) => index !== 0)
+
+		selectVehicle(vehicle);
+
+		moveVehicle(vehicle, toX, toY)
+
+		setTurnQueue(newTurns);
 	}
 
 	useInterval(() => {
 
-		const newTurns = [ ...turnQueue ];
+		handleTurn();
 
-		if(newTurns.length) {
-
-			const lastTurn = newTurns[newTurns.length - 1];
-
-			const { vehicle, toX, toY } = lastTurn;
-
-			moveVehicle(vehicle, toX, toY);
-
-			const turnsWithoutLastTurn = cloneDeep(newTurns.slice(0, -1));
-
-			setTurnQueue(turnsWithoutLastTurn);
-		}
-
-	}, turnQueue.length > 0 ? 500 : null)
+	}, turnQueue.length ? 50 : null)
 
 	return (
 		<Box>
@@ -79,22 +82,12 @@ const GameStatistics = () => {
 							{moveCounter}
 						</Typography>
 						<Grid mt={2} container spacing={2}>
-							<Grid item>
+							<Grid item xs>
 								<Button
 									fullWidth
-									disabled={!undoQueue.length}
-									onClick={() => undoLastMove()}
+									onClick={() => solveGame()}
 									variant="contained">
-									Undo
-								</Button>
-							</Grid>
-							<Grid item>
-								<Button
-									fullWidth
-									disabled={!redoQueue.length}
-									onClick={() => redoLastMove()}
-									variant="contained">
-									Redo
+									Solve
 								</Button>
 							</Grid>
 						</Grid>
@@ -102,9 +95,19 @@ const GameStatistics = () => {
 							<Grid item xs>
 								<Button
 									fullWidth
-									onClick={() => solveGame()}
+									disabled={isEmpty(undoQueue)}
+									onClick={() => undoLastMove()}
 									variant="contained">
-									Solve
+									Undo
+								</Button>
+							</Grid>
+							<Grid item xs>
+								<Button
+									fullWidth
+									disabled={isEmpty(redoQueue)}
+									onClick={() => redoLastMove()}
+									variant="contained">
+									Redo
 								</Button>
 							</Grid>
 						</Grid>

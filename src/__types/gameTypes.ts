@@ -1,14 +1,26 @@
-export enum VehicleSizes {
+import { LevelData } from './../components/app/level_selection/LevelSelection';
+export enum GameObjectSizes {
+	Tiny = 1,
 	Small = 2,
 	Medium = 3,
 	Large = 4,
 }
-export interface GameVehicle extends GameTileCoordinate {
+
+export enum GameObjectTypes {
+	Player,
+	Default,
+	Wall,
+}
+export interface GameVehicle extends GameObject {
 	orientation: AppCarOrientations;
-	size: VehicleSizes;
-	key: string;
-	isPlayerCar?: boolean;
+	size: GameObjectSizes;
+	type?: GameObjectTypes;
 	color?: string;
+}
+
+export enum TileDimensions {
+	x = 'xPosition',
+	y ='yPosition',
 }
 
 export interface GameTileCoordinate {
@@ -17,9 +29,12 @@ export interface GameTileCoordinate {
 }
 
 export interface GameTileProperties extends GameTileCoordinate {
-	vehicle: GameVehicle | null;
 	isWinTile: boolean;
-	isSelected: boolean;
+}
+
+export interface GameObject extends GameTileCoordinate {
+	key: string;
+	type: GameObjectTypes;
 }
 
 export enum AppCarOrientations {
@@ -27,14 +42,15 @@ export enum AppCarOrientations {
 	Vertical,
 }
 export interface GameTileMatrix<T> {
-	[xKey: number]: {
-		[yKey: number]: T;
+	[xKey: number | string]: {
+		[yKey: number | string]: T;
 	}
 }
 
 export interface CreateGameProperties {
 	gridSize: number;
-	vehicles: Array<GameVehicle>
+	vehicles: Array<GameVehicle>;
+	walls?: Array<GameObject>;
 }
 
 export interface MoveTurn {
@@ -100,9 +116,12 @@ export interface GameState {
 	selectedTile: GameTileProperties | null;
 	placementDirection: AppCarOrientations;
 	placementLength: number;
+	placementType: GameObjectTypes;
 	moveCounter: number;
-	undoQueue: Array<GameTileMatrix<GameTileProperties>>;
-	redoQueue: Array<GameTileMatrix<GameTileProperties>>;
 	turnQueue: Array<MoveTurn>;
 	vehicles: Array<GameVehicle>;
+	levelData: LevelData | null;
+	undoQueue: Array<Array<GameVehicle>>; // use creategameprops
+	redoQueue: Array<Array<GameVehicle>>;
+	walls: Array<GameObject>;
 }

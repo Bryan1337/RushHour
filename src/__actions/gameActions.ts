@@ -1,5 +1,11 @@
+import { AppCarOrientations, CreateGameProperties, GameObjectTypes, GameTileCoordinate, GameTileMatrix, GameTileProperties, GameVehicle, MoveTurn } from 'Types/gameTypes';
+import { LevelData } from './../components/app/level_selection/LevelSelection';
 
-import { AppCarOrientations, CreateGameProperties, GameTileMatrix, GameTileProperties, GameVehicle, MoveTurn } from 'Types/gameTypes';
+
+export const setPlacementType = (placementType: GameObjectTypes) => ({
+	type: 'SET_PLACEMENT_TYPE',
+	placementType,
+})
 
 export const setGridTiles = (grid: GameTileMatrix<GameTileProperties>) => ({
 	type: 'SET_GRID_TILES',
@@ -18,22 +24,33 @@ export const moveVehicle = (vehicle: GameVehicle, newXPosition: number, newYPosi
 	newYPosition,
 })
 
-export const createGame = (gameProperties: CreateGameProperties) => ({
+export const createGame = (game: CreateGameProperties) => ({
 	type: 'CREATE_GAME',
-	gameProperties,
+	game,
 })
 
-export const addVehicle = (vehicle: GameVehicle) => ({
+export const createGameProperties = (levelData: LevelData) => ({
+	type: 'CREATE_GAME_PROPERTIES',
+	levelData,
+})
+
+export const addWall = (tile: GameTileCoordinate) => ({
+	type: 'ADD_WALL',
+	tile,
+})
+
+export const addVehicle = (vehicle: GameVehicle, tile: GameTileCoordinate) => ({
 	type: 'ADD_VEHICLE',
-	vehicle
+	vehicle,
+	tile,
 })
 
 export const undoLastMove = () => ({
-	type: 'UNDO_LAST_MOVE',
+	type: 'UNDO_VEHICLE_MOVE',
 })
 
 export const redoLastMove = () => ({
-	type: 'REDO_LAST_MOVE',
+	type: 'REDO_VEHICLE_MOVE',
 })
 
 export const setSelectedTile = (tile: GameTileProperties) => ({
@@ -51,8 +68,14 @@ export const setPlacementDirection = (direction: AppCarOrientations) => ({
 	direction
 })
 
-export const removeVehicleFromSelectedTile = () => ({
-	type: 'REMOVE_VEHICLE_FROM_SELECTED_TILE',
+export const removeWall = (tile: GameTileCoordinate) => ({
+	type: 'REMOVE_WALL',
+	tile,
+})
+
+export const removeVehicle = (tile: GameTileCoordinate) => ({
+	type: 'REMOVE_VEHICLE',
+	tile,
 })
 
 export const setTurnQueue = (queue: Array<MoveTurn>) => ({

@@ -16,7 +16,7 @@ export const useInterval = (callback: () => void, delay: number | null) => {
 
 		const tick = () => {
 
-			savedCallback.current();
+			typeof savedCallback.current === 'function' && savedCallback.current();
 		}
 
 		if (delay !== null) {

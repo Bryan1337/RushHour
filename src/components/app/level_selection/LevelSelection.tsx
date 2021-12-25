@@ -3,15 +3,21 @@ import { Box } from '@mui/system';
 import { useAppTiles } from 'Hooks/useAppTiles';
 import { useCreator } from 'Hooks/useCreator';
 import { useGame } from 'Hooks/useGame';
-import React, { useState } from 'react';
-import { RootStateOrAny, useSelector } from 'react-redux';
-import { GameState, MoveTurn } from 'Types/gameTypes';
+import React from 'react';
 import levelData from '../../../levels/levels.json';
 
+export interface Achievement {
+	turns: number;
+	rank: string;
+}
+export interface LevelData {
+	game: string;
+	level: number;
+	text: string;
+	achievements: Array<Achievement>;
+}
+
 const LevelSelection = () => {
-
-
-	const [ turns, setTurns ] = useState<Array<MoveTurn>>([]);
 
 	const {
 		importString
@@ -19,15 +25,8 @@ const LevelSelection = () => {
 
 	const {
 		createGame,
-		selectVehicle,
-		moveVehicle,
+		createGameProperties,
 	} = useAppTiles();
-
-	const gameState: GameState = useSelector((state: RootStateOrAny) => state.gameReducer);
-
-	const {
-		gameAppTiles
-	} = gameState
 
 	const {
 		setCreatorModeEnabled,
@@ -35,11 +34,15 @@ const LevelSelection = () => {
 
 	const loadLevel = (levelNr: number) => {
 
-		if (Boolean(levelData[levelNr])) {
+		const level: LevelData = levelData[levelNr];
 
-			const game = importString(levelData[levelNr].game);
+		if (Boolean(level)) {
 
-			createGame(game);
+			const game = importString(level.game);
+
+			createGame(game!);
+
+			createGameProperties(level);
 
 			setCreatorModeEnabled(false);
 		}
@@ -49,7 +52,7 @@ const LevelSelection = () => {
 		<Box
 			height="auto"
 			m={.5}>
-			<Paper style={{ height: '100%' }}>
+			<Paper>
 				<Box p={3}>
 					<Typography pb={2} variant="h4">
 						Level selection
@@ -62,7 +65,7 @@ const LevelSelection = () => {
 							<Grid item key={index}>
 								<Button
 									onClick={() => loadLevel(index)}
-									disabled={!Boolean(levelData[index + 1])}
+									disabled={!Boolean(levelData[index]?.game)}
 									color="success"
 									variant="contained">
 									{index + 1}
@@ -78,7 +81,7 @@ const LevelSelection = () => {
 							<Grid item key={index}>
 								<Button
 									onClick={() => loadLevel(index + 10)}
-									disabled={!Boolean(levelData[index + 11])}
+									disabled={!Boolean(levelData[index + 10]?.game)}
 									color="warning"
 									variant="contained">
 									{index + 11}
@@ -94,7 +97,7 @@ const LevelSelection = () => {
 							<Grid item key={index}>
 								<Button
 									onClick={() => loadLevel(index + 20)}
-									disabled={Boolean(levelData[index + 21])}
+									disabled={!Boolean(levelData[index + 20]?.game)}
 									color="primary"
 									variant="contained">
 									{index + 21}
@@ -110,10 +113,26 @@ const LevelSelection = () => {
 							<Grid item key={index}>
 								<Button
 									onClick={() => loadLevel(index + 30)}
-									disabled={!Boolean(levelData[index + 31])}
+									disabled={!Boolean(levelData[index + 30]?.game)}
 									color="error"
 									variant="contained">
 									{index + 31}
+								</Button>
+							</Grid>
+						))}
+					</Grid>
+					<Typography py={2}>
+						Elite
+					</Typography>
+					<Grid container spacing={2}>
+						{Array.from({ length: 10 }).map((_, index) => (
+							<Grid item key={index}>
+								<Button
+									onClick={() => loadLevel(index + 40)}
+									disabled={!Boolean(levelData[index + 40]?.game)}
+									color="info"
+									variant="contained">
+									{index + 41}
 								</Button>
 							</Grid>
 						))}

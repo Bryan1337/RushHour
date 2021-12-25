@@ -1,10 +1,16 @@
-import { useDispatch } from "react-redux";
+import { useGameObject } from 'Hooks/useGameObject';
 import { generateKey } from "Scripts/keyHelper";
-import { AppCarOrientations, AppTileIndices, CreateGameProperties, GameTileMatrix, GameTileProperties, GameVehicle, VehicleColors } from "Types/gameTypes";
+import { AppCarOrientations, AppTileIndices, CreateGameProperties, GameObject, GameObjectTypes, GameTileMatrix, GameTileProperties, VehicleColors } from "Types/gameTypes";
+
+/**
+ * "A-W" = Default vehicle
+ * "X" = Player vehicle
+ * "_" = Wall
+ */
 
 export const useGame = () => {
 
-	const dispatch = useDispatch();
+	const { getVehicle, getWall } = useGameObject();
 
 	const importString = (text: string): CreateGameProperties | null => {
 
@@ -18,11 +24,22 @@ export const useGame = () => {
 
 			const vehicleOccuranceByKey = {};
 
+			const walls: Array<GameObject> = [];
+
 			gameText.split(':').forEach((row, yIndex) => {
 
 				row.split('').forEach((tile, xIndex) => {
 
-					if (tile !== '.') {
+					if(tile === '_') {
+
+						walls.push({
+							xPosition: xIndex,
+							yPosition: yIndex,
+							key: generateKey(),
+							type: GameObjectTypes.Wall,
+						})
+
+					} else if (tile !== '.') {
 
 						if (!Object.keys(uniqueVehiclesByKey).includes(tile)) {
 
@@ -30,7 +47,7 @@ export const useGame = () => {
 								key: generateKey(),
 								xPosition: xIndex,
 								yPosition: yIndex,
-								isPlayerCar: tile === 'X',
+								type: tile === 'X' ? GameObjectTypes.Player : GameObjectTypes.Default,
 								color: VehicleColors[tile],
 							};
 
@@ -59,7 +76,8 @@ export const useGame = () => {
 
 			const createGameProperties: CreateGameProperties = {
 				gridSize: Number(gameGridSize),
-				vehicles: Object.values(uniqueVehiclesByKey)
+				vehicles: Object.values(uniqueVehiclesByKey),
+				walls,
 			}
 
 			return createGameProperties;
@@ -88,20 +106,28 @@ export const useGame = () => {
 
 				const tile: GameTileProperties = row[xIndex];
 
-				if (tile.vehicle) {
+				const vehicle = getVehicle(tile);
 
-					if (tile.vehicle.isPlayerCar) {
+				const wall = getWall(tile);
+
+				if(wall) {
+
+					rowString += '_';
+
+				} else if (vehicle) {
+
+					if (vehicle.type === GameObjectTypes.Player) {
 
 						rowString += 'X';
 
 					} else {
 
-						if (!uniqueEncounteredVehicleKeys.includes(tile.vehicle.key)) {
+						if (!uniqueEncounteredVehicleKeys.includes(vehicle.key)) {
 
-							uniqueEncounteredVehicleKeys.push(tile.vehicle.key);
+							uniqueEncounteredVehicleKeys.push(vehicle.key);
 						}
 
-						rowString += AppTileIndices[uniqueEncounteredVehicleKeys.indexOf(tile.vehicle.key)];
+						rowString += AppTileIndices[uniqueEncounteredVehicleKeys.indexOf(vehicle.key)];
 					}
 
 				} else {
@@ -116,37 +142,8 @@ export const useGame = () => {
 		return btoa(`${6}@${gameStringList.join(':')}`);
 	}
 
-	const createGameFromAppTiles = (gameAppTiles: GameTileMatrix<GameTileProperties>) : CreateGameProperties => {
-
-		let gridSize = 0;
-
-		const vehicles : Array<GameVehicle> = [];
-
-		Object.keys(gameAppTiles).forEach((yIndex) => {
-
-			Object.keys(gameAppTiles[yIndex]).forEach((xIndex) => {
-
-				gridSize = Math.max(Number(xIndex) + 1, Number(yIndex) + 1, gridSize);
-
-				const tile: GameTileProperties = gameAppTiles[yIndex][xIndex];
-
-				if (tile.vehicle) {
-
-					vehicles[tile.vehicle.key] = tile.vehicle;
-				}
-			})
-		})
-
-		return {
-			gridSize,
-			vehicles: Object.values(vehicles),
-		}
-
-	}
-
 	return {
 		importString,
 		exportString,
-		createGameFromAppTiles,
 	}
 }

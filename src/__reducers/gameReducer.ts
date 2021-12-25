@@ -1,6 +1,8 @@
 import { cloneDeep, isEmpty } from 'lodash';
 import { AnyAction } from 'redux';
-import { AppCarOrientations, CreateGameProperties, GameState, GameTileMatrix, GameTileProperties, GameVehicle, VehicleSizes } from 'Types/gameTypes';
+import { getDimension, getExitYPosition } from 'Scripts/coordinateHelper';
+import { AppCarOrientations, CreateGameProperties, GameObjectSizes, GameObjectTypes, GameState, GameTileMatrix, GameTileProperties } from 'Types/gameTypes';
+import { LevelData } from './../components/app/level_selection/LevelSelection';
 
 export const initialAppState: GameState = {
 	gridSize: 6,
@@ -8,17 +10,38 @@ export const initialAppState: GameState = {
 	selectedTile: null,
 	gameAppTiles: {},
 	placementDirection: AppCarOrientations.Horizontal,
-	placementLength: VehicleSizes.Small,
+	placementLength: GameObjectSizes.Small,
+	placementType: GameObjectTypes.Default,
 	moveCounter: 0,
-	undoQueue: [],
-	redoQueue: [],
 	turnQueue: [],
 	vehicles: [],
+	walls: [],
+	levelData: null,
+	undoQueue: [],
+	redoQueue: [],
 }
 
 export const gameReducer = (state: GameState = initialAppState, action: AnyAction) => {
 	switch (action.type) {
+		case 'SET_PLACEMENT_TYPE': {
 
+			let newPlacementLength = state.placementLength
+
+			if (action.placementType === GameObjectTypes.Wall) {
+
+				newPlacementLength = GameObjectSizes.Tiny;
+
+			} else {
+
+				newPlacementLength = Math.max(GameObjectSizes.Small, state.placementType);
+			}
+
+			return {
+				...state,
+				placementType: action.placementType,
+				placementLength: newPlacementLength,
+			}
+		}
 		case 'SET_TURN_QUEUE': {
 			return {
 				...state,
@@ -41,61 +64,27 @@ export const gameReducer = (state: GameState = initialAppState, action: AnyActio
 
 			if(Boolean(selectedTile)) {
 
-				if (placementDirection === AppCarOrientations.Horizontal) {
+				const dimension = getDimension(placementDirection);
 
-					if (selectedTile.xPosition + length >= gridSize) {
+				if (selectedTile![dimension] + length >= gridSize) {
 
-						const newTiles = {
-							...gameAppTiles
-						}
-
-						const newSelectedTile = {
-							...selectedTile
-						}
-
-						const maxXPosition = gridSize - length;
-
-						newTiles[newSelectedTile.yPosition][newSelectedTile.xPosition].isSelected = false;
-
-						newSelectedTile.xPosition = maxXPosition;
-
-						newTiles[newSelectedTile.yPosition][maxXPosition].isSelected = true;
-
-						return {
-							...state,
-							gameAppTiles: newTiles,
-							selectedTile: newSelectedTile,
-							placementLength: length,
-						}
+					const newTiles = {
+						...gameAppTiles
 					}
-				}
 
-				if (placementDirection === AppCarOrientations.Vertical) {
+					const newSelectedTile = {
+						...selectedTile
+					}
 
-					if (selectedTile.yPosition + length >= gridSize) {
+					const maxDimensionPosition = gridSize - length;
 
-						const newTiles = {
-							...gameAppTiles
-						}
+					newSelectedTile[dimension] = maxDimensionPosition;
 
-						const newSelectedTile = {
-							...selectedTile
-						}
-
-						const maxYPosition = gridSize - length;
-
-						newTiles[newSelectedTile.yPosition][newSelectedTile.xPosition].isSelected = false;
-
-						newSelectedTile.yPosition = maxYPosition;
-
-						newTiles[maxYPosition][newSelectedTile.xPosition].isSelected = true;
-
-						return {
-							...state,
-							gameAppTiles: newTiles,
-							selectedTile: newSelectedTile,
-							placementLength: length,
-						}
+					return {
+						...state,
+						gameAppTiles: newTiles,
+						selectedTile: newSelectedTile,
+						placementLength: length,
 					}
 				}
 			}
@@ -113,61 +102,27 @@ export const gameReducer = (state: GameState = initialAppState, action: AnyActio
 
 			if (Boolean(selectedTile)) {
 
-				if(direction === AppCarOrientations.Horizontal) {
+				const dimension = getDimension(direction);
 
-					if (selectedTile.xPosition + placementLength >= gridSize) {
+				if (selectedTile![dimension] + placementLength >= gridSize) {
 
-						const newTiles = {
-							...gameAppTiles
-						}
-
-						const newSelectedTile = {
-							...selectedTile
-						}
-
-						const maxXPosition = gridSize - placementLength;
-
-						newTiles[newSelectedTile.yPosition][newSelectedTile.xPosition].isSelected = false;
-
-						newSelectedTile.xPosition = maxXPosition;
-
-						newTiles[newSelectedTile.yPosition][maxXPosition].isSelected = true;
-
-						return {
-							...state,
-							gameAppTiles: newTiles,
-							selectedTile: newSelectedTile,
-							placementDirection: direction,
-						}
+					const newTiles = {
+						...gameAppTiles
 					}
-				}
 
-				if (direction === AppCarOrientations.Vertical) {
+					const newSelectedTile = {
+						...selectedTile
+					}
 
-					if (selectedTile.yPosition + placementLength >= gridSize) {
+					const maxDimensionPosition = gridSize - placementLength;
 
-						const newTiles = {
-							...gameAppTiles
-						}
+					newSelectedTile[dimension] = maxDimensionPosition;
 
-						const newSelectedTile = {
-							...selectedTile
-						}
-
-						const maxYPosition = gridSize - placementLength;
-
-						newTiles[newSelectedTile.yPosition][newSelectedTile.xPosition].isSelected = false;
-
-						newSelectedTile.yPosition = maxYPosition;
-
-						newTiles[maxYPosition][newSelectedTile.xPosition].isSelected = true;
-
-						return {
-							...state,
-							gameAppTiles: newTiles,
-							selectedTile: newSelectedTile,
-							placementDirection: direction,
-						}
+					return {
+						...state,
+						gameAppTiles: newTiles,
+						selectedTile: newSelectedTile,
+						placementDirection: direction,
 					}
 				}
 			}
@@ -177,77 +132,78 @@ export const gameReducer = (state: GameState = initialAppState, action: AnyActio
 				placementDirection: direction,
 			}
 		}
-		case 'MOVE_VEHICLE': {
+		case 'UNDO_VEHICLE_MOVE': {
 
-			const { moveCounter, gameAppTiles, undoQueue } = state;
-
-			const newUndoQueue = [
-				...undoQueue,
-				cloneDeep(gameAppTiles),
-			]
-
-			let { vehicle, newXPosition, newYPosition } = action;
-
-			if (!vehicle) {
+			if(isEmpty(state.undoQueue)) {
 
 				return {
 					...state,
 				}
 			}
 
-			if (vehicle.orientation === AppCarOrientations.Horizontal) {
+			const newUndoQueue = cloneDeep(state.undoQueue);
 
-				if (newXPosition > vehicle.xPosition) {
-					// Make sure vehicles cant move out of bounds
-					newXPosition = newXPosition - vehicle.size + 1;
+			const lastVehicleState = newUndoQueue.pop();
+
+			const newRedoQueue = cloneDeep(state.redoQueue);
+
+			newRedoQueue.push(state.vehicles);
+
+			return {
+				...state,
+				vehicles: cloneDeep(lastVehicleState),
+				undoQueue: newUndoQueue,
+				redoQueue: newRedoQueue,
+				moveCounter: state.moveCounter - 1,
+			}
+		}
+		case 'REDO_VEHICLE_MOVE': {
+
+			if (isEmpty(state.redoQueue)) {
+
+				return {
+					...state,
 				}
 			}
 
-			if (vehicle.orientation === AppCarOrientations.Vertical) {
+			const newRedoQueue = cloneDeep(state.redoQueue);
 
-				if (newYPosition > vehicle.yPosition) {
-					// Make sure vehicles cant move out of bounds
-					newYPosition = newYPosition - vehicle.size + 1;
-				}
+			const nextVehicleState = newRedoQueue.pop();
+
+			const newUndoQueue = cloneDeep(state.undoQueue);
+
+			newUndoQueue.push(state.vehicles);
+
+			return {
+				...state,
+				vehicles: cloneDeep(nextVehicleState),
+				undoQueue: newUndoQueue,
+				redoQueue: newRedoQueue,
+				moveCounter: state.moveCounter + 1,
 			}
+		}
+		case 'MOVE_VEHICLE': {
 
-			const newTiles = {
-				...gameAppTiles
-			}
+			let { vehicle, newXPosition, newYPosition } = action;
 
-			if (vehicle.orientation === AppCarOrientations.Horizontal) {
+			const newVehicles = [ ...state.vehicles ];
 
-				for (let sizeCounter = 0; sizeCounter < vehicle.size; sizeCounter++) {
-					// Clear vehicle reference from old tiles
-					newTiles[vehicle.yPosition][vehicle.xPosition + sizeCounter].vehicle = null;
-				}
+			let moveCounter = state.moveCounter;
 
-				for (let sizeCounter = 0; sizeCounter < vehicle.size; sizeCounter++) {
-					// Move vehicle to tiles
-					newTiles[vehicle.yPosition][newXPosition + sizeCounter].vehicle = {
-						...vehicle,
-						xPosition: newXPosition,
-						yPosition: newYPosition,
+			for(const index in newVehicles) {
+
+				if(vehicle.key === newVehicles[index].key) {
+
+					if(!(
+						newVehicles[index].xPosition === newXPosition &&
+						newVehicles[index].yPosition === newYPosition)
+					) {
+
+						moveCounter += 1;
 					}
-				}
-			}
 
-			if (vehicle.orientation === AppCarOrientations.Vertical) {
-
-				for (let sizeCounter = 0; sizeCounter < vehicle.size; sizeCounter++) {
-					// Clear vehicle reference from old tiles
-					newTiles[vehicle.yPosition + sizeCounter][vehicle.xPosition].vehicle = null;
-				}
-
-				for (let sizeCounter = 0; sizeCounter < vehicle.size; sizeCounter++) {
-					// Move vehicle to tiles
-					console.log({
-						newTiles,
-						newYPosition,
-						newXPosition,
-					})
-					newTiles[newYPosition + sizeCounter][newXPosition].vehicle = {
-						...vehicle,
+					newVehicles[index] = {
+						...newVehicles[index],
 						xPosition: newXPosition,
 						yPosition: newYPosition,
 					}
@@ -256,16 +212,19 @@ export const gameReducer = (state: GameState = initialAppState, action: AnyActio
 
 			return {
 				...state,
-				gameAppTiles: newTiles,
+				vehicles: newVehicles,
 				selectedVehicle: null,
-				moveCounter: moveCounter + 1,
-				undoQueue: newUndoQueue,
+				moveCounter: moveCounter,
+				undoQueue: [
+					...state.undoQueue,
+					cloneDeep(state.vehicles),
+				],
 				redoQueue: [],
 			}
 		}
 		case 'CREATE_GAME': {
 
-			const { gridSize, vehicles } : CreateGameProperties = action.gameProperties;
+			const { gridSize, vehicles, walls = [] } : CreateGameProperties = action.game;
 
 			const gameAppTiles: GameTileMatrix<GameTileProperties> = {}
 
@@ -278,83 +237,63 @@ export const gameReducer = (state: GameState = initialAppState, action: AnyActio
 						[xIndex]: {
 							xPosition: xIndex,
 							yPosition: yIndex,
+							isWinTile: false,
 						}
 					}
 				})
 			})
 
-			gameAppTiles[Math.floor(gridSize / 2) - 1][gridSize] = {
-				yPosition: Math.floor(gridSize / 2) - 1,
+			gameAppTiles[getExitYPosition(gridSize)][gridSize] = {
+				yPosition: getExitYPosition(gridSize) - 1,
 				xPosition: gridSize,
-				vehicle: null,
 				isWinTile: true,
 			}
-
-			vehicles.forEach((vehicle: GameVehicle) => {
-
-				if (vehicle.orientation === AppCarOrientations.Horizontal) {
-
-					for (let sizeCounter = 0; sizeCounter < vehicle.size; sizeCounter++) {
-
-						gameAppTiles[vehicle.yPosition][vehicle.xPosition + sizeCounter].vehicle = {
-							...vehicle,
-						}
-					}
-				}
-
-				if (vehicle.orientation === AppCarOrientations.Vertical) {
-
-					for (let sizeCounter = 0; sizeCounter < vehicle.size; sizeCounter++) {
-
-						gameAppTiles[vehicle.yPosition + sizeCounter][vehicle.xPosition].vehicle = {
-							...vehicle,
-						}
-					}
-				}
-			})
 
 			return {
 				...state,
 				gameAppTiles,
+				vehicles: [
+					...vehicles,
+				],
+				walls: [
+					...walls,
+				],
 				gridSize,
+				moveCounter: 0,
+			}
+		}
+		case 'CREATE_GAME_PROPERTIES': {
+
+			const levelData : LevelData = action.levelData;
+
+			return {
+				...state,
+				levelData,
 			}
 		}
 		case 'ADD_VEHICLE': {
 
-			const { gameAppTiles } = state;
-
-			const vehicle : GameVehicle = action.vehicle
-
-			if (isEmpty(gameAppTiles)) {
-
-				return {
-					...state,
-				}
-			}
-
-			if (vehicle.orientation === AppCarOrientations.Horizontal) {
-
-				for (let sizeCounter = 0; sizeCounter < vehicle.size; sizeCounter++) {
-
-					newTiles[vehicle.yPosition][vehicle.xPosition + sizeCounter].vehicle = {
-						...vehicle,
-					}
-				}
-			}
-
-			if (vehicle.orientation === AppCarOrientations.Vertical) {
-
-				for (let sizeCounter = 0; sizeCounter < vehicle.size; sizeCounter++) {
-
-					newTiles[vehicle.yPosition + sizeCounter][vehicle.xPosition].vehicle = {
-						...vehicle,
-					}
-				}
-			}
+			const newVehicles = [
+				...state.vehicles,
+				action.vehicle,
+			]
 
 			return {
 				...state,
-				gameAppTiles: newTiles,
+				vehicles: newVehicles,
+				selectedTile: null,
+			}
+		}
+		case 'ADD_WALL': {
+
+			const newWalls = [
+				...state.walls,
+				action.tile,
+			]
+
+			return {
+				...state,
+				walls: newWalls,
 			}
 		}
 		case 'SET_SELECTED_VEHICLE': {
@@ -367,7 +306,7 @@ export const gameReducer = (state: GameState = initialAppState, action: AnyActio
 
 			const { tile } = action;
 
-			const { gridSize, gameAppTiles, selectedTile, placementLength, placementDirection } = state;
+			const { gridSize, gameAppTiles, placementLength, placementDirection } = state;
 
 			const newTiles = {
 				...gameAppTiles,
@@ -377,36 +316,16 @@ export const gameReducer = (state: GameState = initialAppState, action: AnyActio
 				...tile,
 			}
 
-			if(Boolean(selectedTile)) {
+			const dimension = getDimension(placementDirection);
 
-				newTiles[selectedTile.yPosition][selectedTile.xPosition].isSelected = false;
+			let maxDimensionPosition = Math.min(tile[dimension], gridSize - 1);
+
+			if (maxDimensionPosition + placementLength > gridSize) {
+
+				maxDimensionPosition = gridSize - placementLength;
 			}
 
-			let maxXPosition = Math.min(tile.xPosition, gridSize - 1);
-
-			let maxYPosition = Math.min(tile.yPosition, gridSize - 1);
-
-			if (placementDirection === AppCarOrientations.Horizontal) {
-
-				if (maxXPosition + placementLength > gridSize) {
-
-					maxXPosition = gridSize - placementLength ;
-				}
-			}
-
-			if (placementDirection === AppCarOrientations.Vertical) {
-
-				if (maxYPosition + placementLength > gridSize) {
-
-					maxYPosition = gridSize - placementLength;
-				}
-			}
-
-			newSelectedTile.xPosition = maxXPosition;
-
-			newSelectedTile.yPosition = maxYPosition;
-
-			newTiles[maxYPosition][maxXPosition].isSelected = true;
+			newSelectedTile[dimension] = maxDimensionPosition;
 
 			return {
 				...state,
@@ -414,104 +333,36 @@ export const gameReducer = (state: GameState = initialAppState, action: AnyActio
 				selectedTile: newSelectedTile,
 			}
 		}
-		case 'UNDO_LAST_MOVE': {
+		case 'REMOVE_WALL': {
 
-			if(!state.undoQueue.length) {
+			const { walls } = state;
 
-				return {
-					...state,
-				}
-			}
+			const { xPosition, yPosition } = action.tile;
 
-			const newUndoQueue = [...state.undoQueue];
-
-			const lastUndoState = newUndoQueue.pop();
+			const newWalls = [ ...walls ].filter((wall) => !(
+				wall.xPosition === xPosition &&
+				wall.yPosition === yPosition
+			));
 
 			return {
 				...state,
-				gameAppTiles: lastUndoState,
-				undoQueue: newUndoQueue,
-				redoQueue: [
-					...state.redoQueue,
-					state.gameAppTiles,
-				]
+				walls: newWalls,
 			}
 		}
-		case 'REDO_LAST_MOVE': {
+		case 'REMOVE_VEHICLE': {
 
-			if (!state.redoQueue.length) {
+			const { vehicles } = state;
 
-				return {
-					...state,
-				}
-			}
+			const { xPosition, yPosition } = action.tile;
 
-			const newRedoQueue = [ ...state.redoQueue ]
-
-			const lastState = newRedoQueue.pop();
+			const newVehicles = [...vehicles].filter((vehicle) => (
+				vehicle.xPosition === xPosition &&
+				vehicle.yPosition === yPosition
+			));
 
 			return {
 				...state,
-				gameAppTiles: lastState,
-				undoQueue: [
-					...state.undoQueue,
-					state.gameAppTiles,
-				],
-				redoQueue: newRedoQueue
-			}
-		}
-		case 'ADD_TO_UNDO_QUEUE': {
-			return {
-				...state,
-				undoQueue: [
-					...state.undoQueue,
-					action.state,
-				]
-			}
-		}
-		case 'REMOVE_VEHICLE_FROM_SELECTED_TILE': {
-
-			const { selectedTile, gameAppTiles } = state;
-
-			if(!selectedTile) {
-
-				return {
-					...state,
-				}
-			}
-
-			const { vehicle } = selectedTile;
-
-			const newTiles = {
-				...gameAppTiles,
-			}
-
-			if(!vehicle) {
-
-				return {
-					...state,
-				}
-			}
-
-			if (vehicle.orientation === AppCarOrientations.Horizontal) {
-
-				for (let sizeCounter = 0; sizeCounter < vehicle.size; sizeCounter++) {
-
-					newTiles[vehicle.yPosition][vehicle.xPosition + sizeCounter].vehicle = null;
-				}
-			}
-
-			if (vehicle.orientation === AppCarOrientations.Vertical) {
-
-				for (let sizeCounter = 0; sizeCounter < vehicle.size; sizeCounter++) {
-
-					newTiles[vehicle.yPosition + sizeCounter][vehicle.xPosition].vehicle = null;
-				}
-			}
-
-			return {
-				...state,
-				gameAppTiles: newTiles,
+				vehicles: newVehicles,
 			}
 		}
 		default:

@@ -1,7 +1,6 @@
 import { cloneDeep } from 'lodash';
-import { AppCarOrientations, CreateGameProperties, GameTileCoordinate, GameTileMatrix, GameVehicle, MoveTurn } from 'Types/gameTypes';
-
-
+import { getExitYPosition } from 'Scripts/coordinateHelper';
+import { AppCarOrientations, CreateGameProperties, GameObject, GameObjectTypes, GameTileCoordinate, GameTileMatrix, GameVehicle, MoveTurn } from 'Types/gameTypes';
 
 export interface TraversalNode {
 	turn?: MoveTurn;
@@ -19,6 +18,7 @@ export default class Solver {
 	public maxQueueLength: number = 0;
 
 	public vehicles: Array<GameVehicle> = [];
+	public walls: Array<GameObject> = [];
 	public positions: Array<GameTileCoordinate> = [];
 	public winningTurns: Array<MoveTurn>;
 	public nodeQueue: Array<TraversalNode>;
@@ -27,15 +27,19 @@ export default class Solver {
 
 	public rootNode: TraversalNode;
 
-
 	constructor(game: CreateGameProperties) {
 
-		const { gridSize, vehicles } = game;
+		const { gridSize, vehicles, walls = [] } = game;
 
 		this.gridSize = gridSize;
 
 		/* Expects player car to be index 0 */
-		this.vehicles = vehicles.sort((a, b) => Number(b.isPlayerCar) - Number(a.isPlayerCar));
+		this.vehicles = vehicles.sort((a, b) => (
+			Number(GameObjectTypes.Player === b.type) -
+			Number(GameObjectTypes.Player === a.type)
+		));
+
+		this.walls = walls;
 
 		this.positions = vehicles.map(vehicle => ({
 			xPosition: vehicle.xPosition,
@@ -64,18 +68,18 @@ export default class Solver {
 
 	private printWinningSequence = (node: TraversalNode | null) => {
 
-		this.solutionLength++;
-
-		if (!node) {
+		if (!node?.turn) {
 
 			return;
 		}
 
-		this.printWinningSequence(node.parentNode)
-		console.log("---------------");
-		console.log(node.turn);
-		console.log("---------------");
-		this.printPosition(node);
+		this.solutionLength++;
+
+		// this.printWinningSequence(node.parentNode)
+		// console.log("---------------");
+		// console.log(node?.turn);
+		// console.log("---------------");
+		// this.printPosition(node);
 
 		return;
 	}
@@ -135,7 +139,7 @@ export default class Solver {
 					line = line + "."
 				}
 			}
-			if (yIndex == 2) {
+			if (yIndex === getExitYPosition(this.gridSize)) {
 
 				line = line + " -> exit"
 
@@ -201,7 +205,7 @@ export default class Solver {
 
 				let found = false;
 
-				for (var vehicleIndex = 0; vehicleIndex < this.vehicles.length; vehicleIndex++) {
+				for (let vehicleIndex = 0; vehicleIndex < this.vehicles.length; vehicleIndex++) {
 
 					const vehicle = this.vehicles[vehicleIndex];
 
@@ -241,6 +245,15 @@ export default class Solver {
 			}
 		}
 
+		for (let wallIndex = 0; wallIndex < this.walls.length; wallIndex++) {
+
+			const wall = this.walls[wallIndex];
+
+			const { yPosition, xPosition } = wall;
+
+			matrix[yPosition][xPosition] = wallIndex + this.vehicles.length;
+		}
+
 		return matrix;
 	}
 
@@ -253,7 +266,6 @@ export default class Solver {
 			turns.push(node?.turn);
 
 			node = node?.parentNode;
-
 		}
 
 		return turns;
@@ -262,6 +274,28 @@ export default class Solver {
 	public getWinningTurns = () => {
 
 		return this.winningTurns;
+	}
+
+	/*
+		We not limited to moving less than 1 tile per turn.
+		By simply remove turns from tiles in between
+		For example: A -> B, B -> C, C -> D, could by simplified as A to D
+	*/
+	public optimizeTurns = (turns: Array<MoveTurn>) => {
+
+		const optimizedTurns: Array<MoveTurn> = [];
+
+		turns.forEach((turn, index) => {
+
+			const previousTurn = turns[index - 1];
+
+			if(!Boolean(index) || turn.vehicle.key !== previousTurn.vehicle.key) {
+
+				optimizedTurns.push(turn);
+			}
+		})
+
+		return optimizedTurns.reverse();
 	}
 
 	public solve = () => {
@@ -287,7 +321,9 @@ export default class Solver {
 			// is this a winning position?
 			if (this.hasWinnerPath(currentNode)) {
 
-				this.winningTurns = this.getTurnsFromNode(currentNode);
+				const turns = this.getTurnsFromNode(currentNode);
+
+				this.winningTurns = this.optimizeTurns(turns);
 
 				this.printWinningSequence(currentNode)
 
@@ -372,7 +408,7 @@ export default class Solver {
 					}
 				}
 				// all over again but for horizontal vehicles
-				else if (vehicle.orientation == AppCarOrientations.Horizontal) {
+				if (vehicle.orientation == AppCarOrientations.Horizontal) {
 
 					if (xPosition - 1 >= 0) {
 

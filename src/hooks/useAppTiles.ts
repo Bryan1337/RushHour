@@ -1,12 +1,9 @@
 import * as gameActions from 'Actions/gameActions';
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
-import { AppCarOrientations, AppTileIndices, CreateGameProperties, GameState, GameTileMatrix, GameTileProperties, GameVehicle, MoveTurn } from "Types/gameTypes";
+import { useDispatch } from "react-redux";
+import { AppCarOrientations, CreateGameProperties, GameObjectTypes, GameTileCoordinate, GameTileMatrix, GameTileProperties, GameVehicle, MoveTurn } from "Types/gameTypes";
+import { LevelData } from './../components/app/level_selection/LevelSelection';
 
 export const useAppTiles = () => {
-
-	const {
-		selectedVehicle
-	} : GameState = useSelector((state: RootStateOrAny) => state.gameReducer);
 
 	const dispatch = useDispatch();
 
@@ -17,15 +14,7 @@ export const useAppTiles = () => {
 
 	const moveVehicle = (vehicle: GameVehicle, newXPosition: number, newYPosition: number) => {
 
-		const oldX = AppTileIndices[Number(vehicle.yPosition)];
-
-		const oldY = AppTileIndices[Number(vehicle.xPosition)]
-
-		console.log({
-			selectedVehicle,
-		})
-
-		console.log(`Moving vehicle: ${oldX},${oldY} > ${AppTileIndices[newYPosition]},${AppTileIndices[newXPosition]}`)
+		// console.log(`Moving vehicle ${vehicle.key}: ${Number(vehicle.yPosition)},${Number(vehicle.xPosition)} > ${newYPosition},${newXPosition}`)
 
 		dispatch(gameActions.moveVehicle(vehicle, newXPosition, newYPosition));
 	}
@@ -40,19 +29,19 @@ export const useAppTiles = () => {
 		dispatch(gameActions.createGame(gameProperties));
 	}
 
+	const createGameProperties = (levelData: LevelData) => {
+
+		dispatch(gameActions.createGameProperties(levelData));
+	}
+
+	const addWall = (tile: GameTileCoordinate) => {
+
+		dispatch(gameActions.addWall(tile));
+	}
+
 	const addVehicle = (vehicle: GameVehicle) => {
 
 		dispatch(gameActions.addVehicle(vehicle));
-	}
-
-	const undoLastMove = () => {
-
-		dispatch(gameActions.undoLastMove());
-	}
-
-	const redoLastMove = () => {
-
-		dispatch(gameActions.redoLastMove());
 	}
 
 	const setSelectedTile = (tile: GameTileProperties) => {
@@ -65,14 +54,24 @@ export const useAppTiles = () => {
 		dispatch(gameActions.setPlacementLength(length));
 	}
 
+	const setPlacementType = (type: GameObjectTypes) => {
+
+		dispatch(gameActions.setPlacementType(type));
+	}
+
 	const setPlacementDirection = (direction: AppCarOrientations) => {
 
 		dispatch(gameActions.setPlacementDirection(direction));
 	}
 
-	const removeVehicleFromSelectedTile = () => {
+	const removeVehicle = (tile: GameTileCoordinate) => {
 
-		dispatch(gameActions.removeVehicleFromSelectedTile());
+		dispatch(gameActions.removeVehicle(tile));
+	}
+
+	const removeWall = (tile: GameTileCoordinate) => {
+
+		dispatch(gameActions.removeWall(tile));
 	}
 
 	const setTurnQueue = (queue : Array<MoveTurn>) => {
@@ -80,18 +79,32 @@ export const useAppTiles = () => {
 		dispatch(gameActions.setTurnQueue(queue));
 	}
 
+	const undoLastMove = () => {
+
+		dispatch(gameActions.undoLastMove());
+	}
+
+	const redoLastMove = () => {
+
+		dispatch(gameActions.redoLastMove());
+	}
+
 	return {
 		selectVehicle,
 		moveVehicle,
 		createGame,
+		createGameProperties,
+		addWall,
 		addVehicle,
 		setGridTiles,
-		undoLastMove,
-		redoLastMove,
 		setSelectedTile,
+		setPlacementType,
 		setPlacementLength,
 		setPlacementDirection,
-		removeVehicleFromSelectedTile,
+		removeVehicle,
+		removeWall,
 		setTurnQueue,
+		undoLastMove,
+		redoLastMove,
 	}
 }

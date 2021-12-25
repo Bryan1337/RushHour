@@ -4,29 +4,27 @@ import TextsmsIcon from '@mui/icons-material/Textsms';
 import ViewComfyIcon from '@mui/icons-material/ViewComfy';
 import { Button, Grid, Paper, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import 'Components/app/App.css';
 import { useAppTiles } from 'Hooks/useAppTiles';
 import { useCreator } from 'Hooks/useCreator';
 import { useGame } from 'Hooks/useGame';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useGameObject } from 'Hooks/useGameObject';
+import { usePlacement } from 'Hooks/usePlacement';
+import React, { useEffect } from 'react';
 import { RootStateOrAny, useSelector } from 'react-redux';
 import { generateKey } from 'Scripts/keyHelper';
-import { AppCarOrientations, AppTileIndices, GameState, GameTileMatrix, GameTileProperties, GameVehicle, VehicleColors, VehicleSizes } from 'Types/gameTypes';
+import { AppCarOrientations, AppTileIndices, GameObjectSizes, GameObjectTypes, GameState, GameVehicle, VehicleColors } from 'Types/gameTypes';
 
 const MapCreator = () => {
 
-	const gameState: GameState = useSelector((state: RootStateOrAny) => state.gameReducer);
-
-	const [ shouldPlacePlayerCar, setShouldPlacePlayerCar ] = useState<boolean>(false);
-
-	const [ vehicleCount, setVehicleCount ] = useState<number>(0);
-
 	const {
+		vehicles,
 		selectedTile,
 		gameAppTiles,
 		placementLength,
+		placementType,
 		placementDirection,
-	} = gameState;
+	}: GameState = useSelector((state: RootStateOrAny) => state.gameReducer);
+
 
 	const {
 		importString,
@@ -34,43 +32,46 @@ const MapCreator = () => {
 	} = useGame();
 
 	const {
-		removeVehicleFromSelectedTile,
+		removeVehicle,
+		removeWall,
 		setPlacementDirection,
+		setPlacementType,
 		setPlacementLength,
 		addVehicle,
+		addWall,
 		createGame,
-		setGridTiles,
 	} = useAppTiles();
+
+	const {
+		isBlockedPlacementTile,
+	} = usePlacement();
 
 	const {
 		setCreatorModeEnabled
 	} = useCreator();
 
-	const createVehicle = () => {
+	const {
+		getGameObject,
+		removeGameObject,
+		addGameObject,
+	} = useGameObject();
 
-		if(Boolean(selectedTile)) {
+	const createObject = () => {
+
+		if (Boolean(selectedTile)) {
 
 			const newVehicle: GameVehicle = {
 				orientation: placementDirection,
 				size: placementLength,
-				isPlayerCar: shouldPlacePlayerCar,
+				type: placementType,
 				key: generateKey(),
-				color: shouldPlacePlayerCar ? VehicleColors.X : VehicleColors[AppTileIndices[vehicleCount]],
+				color: placementType === GameObjectTypes.Player ? VehicleColors.X : VehicleColors[AppTileIndices[vehicles.length]],
 				xPosition: Number(selectedTile?.xPosition),
 				yPosition: Number(selectedTile?.yPosition),
 			}
 
-			addVehicle(newVehicle);
-
-			setVehicleCount(count => count + 1);
+			addGameObject(selectedTile!, newVehicle);
 		}
-	}
-
-	const removeVehicle = () => {
-
-		removeVehicleFromSelectedTile();
-
-		setVehicleCount(count => count - 1);
 	}
 
 	const logGameString = () => {
@@ -84,9 +85,9 @@ const MapCreator = () => {
 
 		try {
 
-			const grid : GameTileMatrix<GameTileProperties> = importString(text);
+			const game = importString(text);
 
-			setGridTiles(grid);
+			createGame(game!);
 
 		} catch (error) {
 
@@ -108,54 +109,16 @@ const MapCreator = () => {
 
 	}, [])
 
-	const canPlaceTiles = useMemo(() => {
+	const canPlaceTiles = selectedTile && isBlockedPlacementTile(selectedTile!);
 
-		if (!selectedTile) {
 
-			return false;
-		}
-
-		if (placementDirection === AppCarOrientations.Horizontal) {
-
-			for (let xIndex = Number(selectedTile?.xPosition); xIndex <= Number(selectedTile?.xPosition) + placementLength - 1; xIndex++) {
-
-				if (Boolean(gameAppTiles[selectedTile.yPosition][xIndex].vehicle)) {
-
-					return true;
-				}
-			}
-		}
-
-		if (placementDirection === AppCarOrientations.Vertical) {
-
-			for (let yIndex = Number(selectedTile?.yPosition); yIndex <= Number(selectedTile?.yPosition) + placementLength - 1; yIndex++) {
-
-				if (Boolean(gameAppTiles[yIndex][selectedTile.xPosition].vehicle)) {
-
-					return true;
-				}
-			}
-		}
-
-		return false;
-
-	}, [
-		selectedTile?.vehicle,
-		selectedTile?.xPosition,
-		selectedTile?.yPosition,
-	])
-
-	const tileHasVehicle = useMemo(() => {
-
-		return selectedTile?.vehicle
-
-	}, [selectedTile?.vehicle, selectedTile?.xPosition, selectedTile?.yPosition])
+	const hasSelectedObject = selectedTile && getGameObject(selectedTile!);
 
 	return (
 		<Box
 			height="auto"
 			m={.5}>
-			<Paper style={{height: '100%'}}>
+			<Paper>
 				<Box p={3}>
 					<Typography
 						variant="h4"
@@ -163,7 +126,7 @@ const MapCreator = () => {
 						Editor
 					</Typography>
 					<Typography pb={2}>
-						Orientation ({AppCarOrientations[placementDirection]})
+						Vehicle orientation
 					</Typography>
 					<Box>
 						<ToggleButtonGroup
@@ -180,7 +143,7 @@ const MapCreator = () => {
 						</ToggleButtonGroup>
 					</Box>
 					<Typography py={2}>
-						Selected length ({placementLength})
+						Object size
 					</Typography>
 					<Box>
 						<ToggleButtonGroup
@@ -188,31 +151,43 @@ const MapCreator = () => {
 							exclusive
 							fullWidth
 							onChange={(_, value) => value !== null && setPlacementLength(value)}>
-							<ToggleButton size="small" value={VehicleSizes.Small}>
-								{VehicleSizes.Small}
+							<ToggleButton
+								size="small"
+								disabled={GameObjectTypes.Wall !== placementType}
+								value={GameObjectSizes.Tiny}>
+								{GameObjectSizes.Tiny}
 							</ToggleButton>
-							<ToggleButton size="small" value={VehicleSizes.Medium}>
-								{VehicleSizes.Medium}
+							<ToggleButton
+								size="small"
+								disabled={GameObjectTypes.Wall === placementType}
+								value={GameObjectSizes.Small}>
+								{GameObjectSizes.Small}
 							</ToggleButton>
-							<ToggleButton size="small" value={VehicleSizes.Large}>
-								{VehicleSizes.Large}
+							<ToggleButton
+								size="small"
+								disabled={GameObjectTypes.Wall === placementType}
+								value={GameObjectSizes.Medium}>
+								{GameObjectSizes.Medium}
 							</ToggleButton>
 						</ToggleButtonGroup>
 					</Box>
 					<Typography py={2}>
-						Place player car ({shouldPlacePlayerCar ? 'Yes' : 'No'})
+						Object type
 					</Typography>
 					<Box>
 						<ToggleButtonGroup
-							value={shouldPlacePlayerCar}
+							value={placementType}
 							exclusive
 							fullWidth
-							onChange={(_, value) => value !== null && setShouldPlacePlayerCar(value)}>
-							<ToggleButton size="small" value={true}>
-								Yes
+							onChange={(e) => setPlacementType(Number(e.target?.value) as GameObjectTypes)}>
+							<ToggleButton size="small" value={GameObjectTypes.Player}>
+								Player
 							</ToggleButton>
-							<ToggleButton size="small" value={false}>
-								No
+							<ToggleButton size="small" value={GameObjectTypes.Default}>
+								Default
+							</ToggleButton>
+							<ToggleButton size="small" value={GameObjectTypes.Wall}>
+								Wall
 							</ToggleButton>
 						</ToggleButtonGroup>
 					</Box>
@@ -222,8 +197,8 @@ const MapCreator = () => {
 					{selectedTile && <>
 						<Box textAlign="center">
 							<Typography
-								variant="h4">
-								{AppTileIndices[selectedTile.xPosition]}:{AppTileIndices[selectedTile.yPosition]}
+								variant="h5">
+								{selectedTile.xPosition}:{selectedTile.yPosition}
 							</Typography>
 						</Box>
 						<Grid
@@ -233,22 +208,22 @@ const MapCreator = () => {
 							<Grid
 								item
 								xs>
-								{tileHasVehicle && <Button
+								{hasSelectedObject && <Button
 									startIcon={<DeleteIcon />}
-									onClick={() => removeVehicle()}
+									onClick={() => removeGameObject(selectedTile)}
 									fullWidth
 									color="error"
 									variant="contained">
-									Remove vehicle
+									Remove
 								</Button>}
-								{!tileHasVehicle && <Button
+								{!hasSelectedObject && <Button
 									startIcon={<AddIcon />}
-									onClick={() => createVehicle()}
+									onClick={() => createObject()}
 									fullWidth
 									color="success"
-									disabled={canPlaceTiles}
+									disabled={Boolean(canPlaceTiles)}
 									variant="contained">
-									Place vehicle
+									Place
 								</Button>}
 							</Grid>
 						</Grid>
