@@ -5,12 +5,17 @@
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"strictNullChecks": true,
-		"module": "CommonJS",
-		"target": "ES6",
+		"target": "esnext",
+		"module": "esnext",
 		"jsx": "react",
 		"allowJs": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
+		"lib": [
+			"webworker",
+			"es5",
+			"scripthost"
+		],
 		"checkJs": true,
 		"allowSyntheticDefaultImports": true,
 		"moduleResolution": "node",
@@ -44,6 +49,9 @@
 			],
 			"Types/*": [
 				"__types/*"
+			],
+			"Workers/*": [
+				"workers/*"
 			],
 		},
 	},

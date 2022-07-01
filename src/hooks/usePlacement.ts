@@ -1,6 +1,7 @@
 import { RootStateOrAny, useSelector } from 'react-redux';
 import { getExitYPosition } from 'Scripts/coordinateHelper';
-import { AppCarOrientations, GameObjectTypes, GameState, GameTileProperties } from 'Types/gameTypes';
+import { AppCarOrientations, GameObject, GameObjectTypes, GameState, GameTileCoordinate } from 'Types/gameTypes';
+import { getCoordinateTileKey } from './../scripts/coordinateHelper';
 import { useGameObject } from './useGameObject';
 
 export const usePlacement = () => {
@@ -15,34 +16,46 @@ export const usePlacement = () => {
 		placementDirection,
 		selectedTile,
 		gridSize,
-		gameAppTiles,
-		selectedVehicle,
-		walls,
+		gameTiles,
+		selectedObject,
 	}: GameState = useSelector((state: RootStateOrAny) => state.gameReducer);
 
-	const isAccessibleCarTile = (tileProperties: GameTileProperties) : boolean => {
+	/**
+	 * O(1)
+	 *
+	 * @param tileProperties
+	 *
+	 * @returns boolean
+	 */
+	const isAccessibleCarTile = (tileProperties: GameTileCoordinate) : boolean => {
 
 		const { xPosition, yPosition } = tileProperties;
 
-		if (!selectedVehicle) {
+		if (!selectedObject) {
 
 			return false;
 		}
 
-		if (selectedVehicle.orientation === AppCarOrientations.Horizontal) {
+		if (selectedObject.orientation === AppCarOrientations.Horizontal) {
 
-			return yPosition === selectedVehicle.yPosition;
+			return yPosition === selectedObject.yPosition;
 		}
 
-		if (selectedVehicle.orientation === AppCarOrientations.Vertical) {
+		if (selectedObject.orientation === AppCarOrientations.Vertical) {
 
-			return xPosition === selectedVehicle.xPosition;
+			return xPosition === selectedObject.xPosition;
 		}
 
 		return false;
 	}
 
-	const isSelectedTile = (tileProperties: GameTileProperties) : boolean => {
+	/**
+	 * O(1)
+	 *
+	 * @param tileProperties
+	 * @returns boolean
+	 */
+	const isSelectedTile = (tileProperties: GameTileCoordinate) : boolean => {
 
 		const { xPosition, yPosition } = tileProperties;
 
@@ -52,7 +65,14 @@ export const usePlacement = () => {
 		);
 	}
 
-	const isAdjacentSelectedTile = (tileProperties: GameTileProperties) => {
+
+	/**
+	 * O(1)
+	 *
+	 * @param tileProperties
+	 * @returns
+	 */
+	const isAdjacentSelectedTile = (tileProperties: GameTileCoordinate) => {
 
 		if(placementType === GameObjectTypes.Wall) {
 
@@ -86,28 +106,40 @@ export const usePlacement = () => {
 				return true;
 			}
 		}
+
+		return false;
 	}
 
-	const isBlockedCarTile = (tileProperties: GameTileProperties) : boolean => {
+	/**
+	 * O(n)
+	 *
+	 * @param tileProperties
+	 * @returns boolean
+	 */
+	const isBlockedCarTile = (tileProperties: GameTileCoordinate) : boolean => {
 
 		const { xPosition, yPosition } = tileProperties;
 
-		if (!selectedVehicle || !isAccessibleCarTile(tileProperties)) {
+		if (!isAccessibleCarTile(tileProperties)) {
 
 			return false;
 		}
 
-		if (selectedVehicle.orientation === AppCarOrientations.Horizontal) {
+		const selection = selectedObject as GameObject;
 
-			for (let xIndex = selectedVehicle.xPosition + 1; xIndex < gridSize; xIndex++) {
+		if (selection.orientation === AppCarOrientations.Horizontal) {
 
-				const tile: GameTileProperties = gameAppTiles[selectedVehicle.yPosition][xIndex];
+			for (let xIndex = selection.xPosition + 1; xIndex < gridSize; xIndex++) {
+
+				const coordinate = getCoordinateTileKey(xIndex, selection.yPosition);
+
+				const tile: GameTileCoordinate = gameTiles[coordinate];
 
 				const gameObject = getGameObject(tile);
 
 				if (Boolean(gameObject)) {
 
-					if (gameObject?.key === selectedVehicle.key) {
+					if (gameObject?.key === selection.key) {
 
 						continue;
 					}
@@ -119,15 +151,17 @@ export const usePlacement = () => {
 				}
 			}
 
-			for (let xIndex = selectedVehicle.xPosition - 1; xIndex >= 0; xIndex--) {
+			for (let xIndex = selection.xPosition - 1; xIndex >= 0; xIndex--) {
 
-				const tile: GameTileProperties = gameAppTiles[selectedVehicle.yPosition][xIndex];
+				const coordinate = getCoordinateTileKey(xIndex, selection.yPosition);
+
+				const tile: GameTileCoordinate = gameTiles[coordinate];
 
 				const gameObject = getGameObject(tile);
 
 				if (Boolean(gameObject)) {
 
-					if (gameObject?.key === selectedVehicle.key) {
+					if (gameObject?.key === selection.key) {
 
 						continue;
 					}
@@ -140,17 +174,19 @@ export const usePlacement = () => {
 			}
 		}
 
-		if (selectedVehicle.orientation === AppCarOrientations.Vertical) {
+		if (selection.orientation === AppCarOrientations.Vertical) {
 
-			for (let yIndex = selectedVehicle.yPosition + 1; yIndex < gridSize; yIndex++) {
+			for (let yIndex = selection.yPosition + 1; yIndex < gridSize; yIndex++) {
 
-				const tile: GameTileProperties = gameAppTiles[yIndex][selectedVehicle.xPosition];
+				const coordinate = getCoordinateTileKey(selection.xPosition, yIndex);
+
+				const tile: GameTileCoordinate = gameTiles[coordinate];
 
 				const gameObject = getGameObject(tile);
 
 				if (Boolean(gameObject)) {
 
-					if (gameObject?.key === selectedVehicle.key) {
+					if (gameObject?.key === selection.key) {
 
 						continue;
 					}
@@ -162,15 +198,17 @@ export const usePlacement = () => {
 				}
 			}
 
-			for (let yIndex = selectedVehicle.yPosition - 1; yIndex >= 0; yIndex--) {
+			for (let yIndex = selection.yPosition - 1; yIndex >= 0; yIndex--) {
 
-				const tile: GameTileProperties = gameAppTiles[yIndex][selectedVehicle.xPosition];
+				const coordinate = getCoordinateTileKey(selection.xPosition, yIndex);
+
+				const tile: GameTileCoordinate = gameTiles[coordinate];
 
 				const gameObject = getGameObject(tile);
 
 				if (Boolean(gameObject)) {
 
-					if (gameObject?.key === selectedVehicle.key) {
+					if (gameObject?.key === selection.key) {
 
 						continue;
 					}
@@ -186,7 +224,7 @@ export const usePlacement = () => {
 		return false;
 	}
 
-	const isBlockedPlacementTile = (tileProperties: GameTileProperties) : boolean => {
+	const isBlockedPlacementTile = (tileProperties: GameTileCoordinate) : boolean => {
 
 		const { yPosition } = tileProperties;
 
@@ -207,7 +245,9 @@ export const usePlacement = () => {
 
 			for (let xIndex = selectedTile!.xPosition; xIndex < selectedTile!.xPosition + placementLength; xIndex++) {
 
-				const tile: GameTileProperties = gameAppTiles[selectedTile!.yPosition][xIndex];
+				const coordinate = getCoordinateTileKey(xIndex, selectedTile!.yPosition);
+
+				const tile: GameTileCoordinate = gameTiles[coordinate];
 
 				const gameObject = getGameObject(tile);
 
@@ -222,7 +262,9 @@ export const usePlacement = () => {
 
 			for (let yIndex = selectedTile!.yPosition; yIndex < selectedTile!.yPosition + placementLength; yIndex++) {
 
-				const tile: GameTileProperties = gameAppTiles[yIndex][selectedTile!.xPosition];
+				const coordinate = getCoordinateTileKey(selectedTile!.xPosition, yIndex);
+
+				const tile: GameTileCoordinate = gameTiles[coordinate];
 
 				const gameObject = getGameObject(tile);
 
@@ -236,30 +278,11 @@ export const usePlacement = () => {
 		return false;
 	}
 
-	const isWallTile = (tileProperties: GameTileProperties) => {
-
-		for(let wallIndex = 0; wallIndex < walls.length; wallIndex++) {
-
-			const wall = walls[wallIndex];
-
-			if((
-				wall.yPosition === tileProperties.yPosition &&
-				wall.xPosition === tileProperties.xPosition
-			)) {
-
-				return true;
-			}
-		}
-
-		return null;
-	}
-
 	return {
 		isSelectedTile,
 		isAdjacentSelectedTile,
 		isBlockedPlacementTile,
 		isBlockedCarTile,
-		isWallTile,
 		isAccessibleCarTile,
 	}
 }

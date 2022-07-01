@@ -1,6 +1,7 @@
 import { useGameObject } from 'Hooks/useGameObject';
-import { generateKey } from "Scripts/keyHelper";
-import { AppCarOrientations, AppTileIndices, CreateGameProperties, GameObject, GameObjectTypes, GameTileMatrix, GameTileProperties, VehicleColors } from "Types/gameTypes";
+import { getCoordinateTileKey } from 'Scripts/coordinateHelper';
+import { generateKey } from 'Scripts/keyHelper';
+import { AppCarOrientations, AppTileIndices, CreateGameProperties, GameObject, GameObjectKeys, GameObjectMap, GameObjectTypes, VehicleColors } from "Types/gameTypes";
 
 /**
  * "A-W" = Default vehicle
@@ -10,7 +11,19 @@ import { AppCarOrientations, AppTileIndices, CreateGameProperties, GameObject, G
 
 export const useGame = () => {
 
-	const { getVehicle, getWall } = useGameObject();
+	const { getGameObject } = useGameObject();
+
+	const getTypeFromString = (tileString: string) => {
+
+		switch(tileString) {
+			case GameObjectKeys.Player:
+				return GameObjectTypes.Player;
+			case GameObjectKeys.Wall:
+				return GameObjectTypes.Wall;
+			default:
+				return GameObjectTypes.Default;
+		}
+	}
 
 	const importString = (text: string): CreateGameProperties | null => {
 
@@ -20,64 +33,70 @@ export const useGame = () => {
 
 			const [gameGridSize, gameText] = encodedString.split('@');
 
-			const uniqueVehiclesByKey = {};
+			const uniqueGameObjectsByKey = {};
 
-			const vehicleOccuranceByKey = {};
+			const gameObjectOccuranceByKey = {};
 
-			const walls: Array<GameObject> = [];
-
-			gameText.split(':').forEach((row, yIndex) => {
+			gameText.split(GameObjectKeys.Separator).forEach((row, yIndex) => {
 
 				row.split('').forEach((tile, xIndex) => {
 
-					if(tile === '_') {
+					let key = tile;
 
-						walls.push({
-							xPosition: xIndex,
-							yPosition: yIndex,
-							key: generateKey(),
-							type: GameObjectTypes.Wall,
-						})
+					if(tile === GameObjectKeys.Wall) {
 
-					} else if (tile !== '.') {
+						key = `${tile})_${xIndex}_${yIndex}`;
+					}
 
-						if (!Object.keys(uniqueVehiclesByKey).includes(tile)) {
+					if (tile !== GameObjectKeys.EmptyTile) {
 
-							uniqueVehiclesByKey[tile] = {
+						if (!Object.keys(uniqueGameObjectsByKey).includes(tile)) {
+
+							const type = getTypeFromString(tile);
+
+							uniqueGameObjectsByKey[key] = {
 								key: generateKey(),
 								xPosition: xIndex,
 								yPosition: yIndex,
-								type: tile === 'X' ? GameObjectTypes.Player : GameObjectTypes.Default,
+								type,
 								color: VehicleColors[tile],
 							};
 
-							vehicleOccuranceByKey[tile] = 0;
+							gameObjectOccuranceByKey[key] = 0;
 						}
 
-						vehicleOccuranceByKey[tile] += 1;
+						gameObjectOccuranceByKey[key] += 1;
 
-						if (vehicleOccuranceByKey[tile] > 1) {
+						if (gameObjectOccuranceByKey[key] > 1) {
 
-							if (xIndex > uniqueVehiclesByKey[tile].xPosition) {
+							if (xIndex > uniqueGameObjectsByKey[key].xPosition) {
 
-								uniqueVehiclesByKey[tile].orientation = AppCarOrientations.Horizontal;
+								uniqueGameObjectsByKey[key].orientation = AppCarOrientations.Horizontal;
 							}
 
-							if (yIndex > uniqueVehiclesByKey[tile].yPosition) {
+							if (yIndex > uniqueGameObjectsByKey[key].yPosition) {
 
-								uniqueVehiclesByKey[tile].orientation = AppCarOrientations.Vertical;
+								uniqueGameObjectsByKey[key].orientation = AppCarOrientations.Vertical;
 							}
 						}
 
-						uniqueVehiclesByKey[tile].size = vehicleOccuranceByKey[tile];
+						uniqueGameObjectsByKey[key].size = gameObjectOccuranceByKey[key];
 					}
 				})
 			})
 
+			const gameObjects: GameObjectMap = {}
+
+			Object.keys(uniqueGameObjectsByKey).forEach((key) => {
+
+				const gameObject = uniqueGameObjectsByKey[key];
+
+				gameObjects[getCoordinateTileKey(gameObject.xPosition, gameObject.yPosition)] = gameObject;
+			})
+
 			const createGameProperties: CreateGameProperties = {
 				gridSize: Number(gameGridSize),
-				vehicles: Object.values(uniqueVehiclesByKey),
-				walls,
+				gameObjects,
 			}
 
 			return createGameProperties;
@@ -90,56 +109,49 @@ export const useGame = () => {
 		return null;
 	}
 
-	const exportString = (tiles: GameTileMatrix<GameTileProperties>) : string => {
+	const exportString = (gridSize: number, gameObjects: GameObjectMap) : string => {
 
-		const gameStringList : Array<string> = [];
+		let gameString = '';
 
 		const uniqueEncounteredVehicleKeys : Array<string> = [];
 
-		Object.keys(tiles).forEach((yIndex) => {
+		// 6@ABB_..:A..CDD:EXXC...:E.FGGH:IIF..H:JJKKKH
+		Array.from({ length: gridSize }).forEach((_, yIndex) => {
 
-			const row = tiles[yIndex];
+			Array.from({ length: gridSize }).forEach((_, xIndex) => {
 
-			let rowString = '';
+				const gameObject = getGameObject({ xPosition: xIndex, yPosition: yIndex }) as GameObject;
 
-			Object.keys(row).forEach((xIndex) => {
+				if (!Boolean(gameObject)) {
 
-				const tile: GameTileProperties = row[xIndex];
+					gameString += GameObjectKeys.EmptyTile;
 
-				const vehicle = getVehicle(tile);
+				} else if (gameObject.type === GameObjectTypes.Wall) {
 
-				const wall = getWall(tile);
+					gameString += GameObjectKeys.Wall;
 
-				if(wall) {
+				} else if (gameObject.type === GameObjectTypes.Player) {
 
-					rowString += '_';
+					gameString += GameObjectKeys.Player;
 
-				} else if (vehicle) {
+				} else if (gameObject.type === GameObjectTypes.Default) {
 
-					if (vehicle.type === GameObjectTypes.Player) {
+					if (!uniqueEncounteredVehicleKeys.includes(gameObject.key)) {
 
-						rowString += 'X';
-
-					} else {
-
-						if (!uniqueEncounteredVehicleKeys.includes(vehicle.key)) {
-
-							uniqueEncounteredVehicleKeys.push(vehicle.key);
-						}
-
-						rowString += AppTileIndices[uniqueEncounteredVehicleKeys.indexOf(vehicle.key)];
+						uniqueEncounteredVehicleKeys.push(gameObject.key);
 					}
 
-				} else {
+					gameString += AppTileIndices[uniqueEncounteredVehicleKeys.indexOf(gameObject.key)];
+				}
 
-					rowString += '.';
+				if(xIndex === gridSize - 1) {
+
+					gameString += GameObjectKeys.Separator;
 				}
 			})
-
-			gameStringList.push(rowString);
 		})
 
-		return btoa(`${6}@${gameStringList.join(':')}`);
+		return btoa(`${gridSize}@${gameString}`);
 	}
 
 	return {

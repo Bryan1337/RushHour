@@ -11,24 +11,24 @@ const LevelInfo = () => {
 	const { levelData }: GameState = useSelector((state: RootStateOrAny) => state.gameReducer);
 
 	const {
-		level,
-		text,
-		achievements,
-	} : LevelData = levelData!;
+		level = 0,
+		text = '-',
+		achievements = [],
+	}: LevelData = levelData;
 
 	return (
 		<Paper>
 			<Box p={3}>
-				<Typography variant="h2">
+				<Typography variant="h4">
 					{level} {text}
 				</Typography>
 				{!isEmpty(achievements) && <>
-					<Typography variant="h4" py={2}>
+					<Typography variant="h5" py={2}>
 						Rankings
 					</Typography>
-					{achievements.map((achievement: Achievement) => (
-						<Box pb={3}>
-							<Typography variant="h5">
+					{achievements.map((achievement: Achievement, index) => (
+						<Box pb={3} key={index}>
+							<Typography variant="h6">
 								{achievement.rank}
 							</Typography>
 							<Typography>

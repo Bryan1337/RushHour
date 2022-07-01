@@ -1,115 +1,163 @@
-import { Button, Grid, Paper, Typography } from '@mui/material';
+import { Button, CircularProgress, Grid, Paper, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import Solver from 'Classes/solver/Solver';
 import { useAppTiles } from 'Hooks/useAppTiles';
-import { useInterval } from 'Hooks/useInterval';
-import { isEmpty } from 'lodash';
-import React from 'react';
+import { useSolverWorker } from 'Hooks/useSolverWorker';
+import React, { useEffect, useState } from 'react';
 import { RootStateOrAny, useSelector } from 'react-redux';
-import { CreateGameProperties, GameState } from 'Types/gameTypes';
-
+import { CreateGameProperties, GameState, MoveTurn } from 'Types/gameTypes';
 
 const GameStatistics = () => {
 
 	const gameState: GameState = useSelector((state: RootStateOrAny) => state.gameReducer);
 
+	const [ isResetting, setIsResetting ] = useState(false);
+
 	const {
-		moveVehicle,
-		selectVehicle,
+		moveObject,
 		setTurnQueue,
 		undoLastMove,
 		redoLastMove,
 	} = useAppTiles();
 
 	const {
-		moveCounter,
-		vehicles,
+		gameObjects,
 		gridSize,
 		turnQueue,
 		undoQueue,
 		redoQueue,
-		walls,
 	} = gameState;
 
+	const {
+		solveGame,
+		isSolving,
+	} = useSolverWorker();
 
-	const solveGame = () => {
+	const clickedSolveGame = async () => {
 
 		const game: CreateGameProperties = {
-			vehicles,
+			gameObjects,
 			gridSize,
-			walls,
 		}
 
-		const solver = new Solver(game);
+		try {
 
-		solver.solve();
+			const turns = await solveGame(game) as Array<MoveTurn>;
 
-		const turns = solver.getWinningTurns();
+			setTurnQueue(turns);
 
-		setTurnQueue(turns);
+		} catch (error) {
+
+			console.log({
+				error
+			})
+		}
 	}
 
 	const handleTurn = () => {
 
 		const [ firstTurn ] = turnQueue;
 
-		const { vehicle, toX, toY } = firstTurn;
-
 		const newTurns = [...turnQueue].filter((_, index) => index !== 0)
 
-		selectVehicle(vehicle);
-
-		moveVehicle(vehicle, toX, toY)
+		moveObject(firstTurn);
 
 		setTurnQueue(newTurns);
 	}
 
-	useInterval(() => {
+	useEffect(() => {
 
-		handleTurn();
+		if(Boolean(turnQueue.length)) {
 
-	}, turnQueue.length ? 50 : null)
+			requestAnimationFrame(() => {
+
+				handleTurn();
+			})
+
+		}
+
+	}, [ turnQueue.length])
+
+	const resetGame = () => {
+
+		setIsResetting(true);
+	}
+
+	useEffect(() => {
+
+		if(isResetting) {
+
+			if (undoQueue.length) {
+
+				undoLastMove();
+
+			} else {
+
+				setIsResetting(false);
+			}
+		}
+
+	}, [ undoQueue.length, isResetting ])
+
+	const disableSolveButton = Boolean(turnQueue.length || isSolving);
+
+	const disableUndoButton = Boolean(!undoQueue.length || disableSolveButton);
+
+	const disableRedoButton = Boolean(!redoQueue.length || disableSolveButton);
 
 	return (
-		<Box>
-			<Box height="auto" m={.5}>
+		<Box minWidth={320}>
+			<Box height="auto" m={.5} overflow="scroll" maxHeight={500}>
 				<Paper>
 					<Box p={3}>
 						<Typography>
 							Turn counter
 						</Typography>
 						<Typography variant="h2">
-							{moveCounter}
+							{undoQueue.length}
 						</Typography>
-						<Grid mt={2} container spacing={2}>
-							<Grid item xs>
+						<Box mt={2}>
+							<Button
+								fullWidth
+								disabled={disableSolveButton}
+								onClick={() => clickedSolveGame()}
+								variant="contained">
+								{!disableSolveButton && "Solve"}
+								{disableSolveButton && <CircularProgress size={16} />}
+							</Button>
+						</Box>
+						<Box mt={2}>
+							<Button
+								fullWidth
+								disabled={disableUndoButton}
+								variant="contained"
+								onClick={() => resetGame()}>
+								Reset
+							</Button>
+						</Box>
+						<Box display="flex" mt={2}>
+							<Box mr={2} mb={2} width="100%">
 								<Button
 									fullWidth
-									onClick={() => solveGame()}
-									variant="contained">
-									Solve
-								</Button>
-							</Grid>
-						</Grid>
-						<Grid mt={2} container spacing={2}>
-							<Grid item xs>
-								<Button
-									fullWidth
-									disabled={isEmpty(undoQueue)}
+									disabled={disableUndoButton}
 									onClick={() => undoLastMove()}
 									variant="contained">
-									Undo
+									Undo ({undoQueue.length})
 								</Button>
-							</Grid>
-							<Grid item xs>
+							</Box>
+							<Box mb={2} width="100%">
 								<Button
 									fullWidth
-									disabled={isEmpty(redoQueue)}
+									disabled={disableRedoButton}
 									onClick={() => redoLastMove()}
 									variant="contained">
-									Redo
+									Redo ({redoQueue.length})
 								</Button>
-							</Grid>
+							</Box>
+						</Box>
+						<Grid mt={2}>
+							{/* <TurnQueue /> */}
+							{/* <UndoQueue /> */}
+							{/* <RedoQueue /> */}
 						</Grid>
 					</Box>
 				</Paper>

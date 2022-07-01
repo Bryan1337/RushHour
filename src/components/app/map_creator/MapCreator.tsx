@@ -2,7 +2,7 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import TextsmsIcon from '@mui/icons-material/Textsms';
 import ViewComfyIcon from '@mui/icons-material/ViewComfy';
-import { Button, Grid, Paper, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import { Button, ButtonGroup, Grid, Paper, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { useAppTiles } from 'Hooks/useAppTiles';
 import { useCreator } from 'Hooks/useCreator';
@@ -11,20 +11,19 @@ import { useGameObject } from 'Hooks/useGameObject';
 import { usePlacement } from 'Hooks/usePlacement';
 import React, { useEffect } from 'react';
 import { RootStateOrAny, useSelector } from 'react-redux';
-import { generateKey } from 'Scripts/keyHelper';
-import { AppCarOrientations, AppTileIndices, GameObjectSizes, GameObjectTypes, GameState, GameVehicle, VehicleColors } from 'Types/gameTypes';
+import { AppCarOrientations, CreateGameProperties, GameObjectSizes, GameObjectTypes, GameState } from 'Types/gameTypes';
 
 const MapCreator = () => {
 
 	const {
-		vehicles,
+		gridSize,
+		gameTiles,
+		gameObjects,
 		selectedTile,
-		gameAppTiles,
 		placementLength,
 		placementType,
 		placementDirection,
 	}: GameState = useSelector((state: RootStateOrAny) => state.gameReducer);
-
 
 	const {
 		importString,
@@ -32,14 +31,11 @@ const MapCreator = () => {
 	} = useGame();
 
 	const {
-		removeVehicle,
-		removeWall,
 		setPlacementDirection,
 		setPlacementType,
 		setPlacementLength,
-		addVehicle,
-		addWall,
 		createGame,
+		setGridSize,
 	} = useAppTiles();
 
 	const {
@@ -53,30 +49,12 @@ const MapCreator = () => {
 	const {
 		getGameObject,
 		removeGameObject,
-		addGameObject,
+		createObject,
 	} = useGameObject();
-
-	const createObject = () => {
-
-		if (Boolean(selectedTile)) {
-
-			const newVehicle: GameVehicle = {
-				orientation: placementDirection,
-				size: placementLength,
-				type: placementType,
-				key: generateKey(),
-				color: placementType === GameObjectTypes.Player ? VehicleColors.X : VehicleColors[AppTileIndices[vehicles.length]],
-				xPosition: Number(selectedTile?.xPosition),
-				yPosition: Number(selectedTile?.yPosition),
-			}
-
-			addGameObject(selectedTile!, newVehicle);
-		}
-	}
 
 	const logGameString = () => {
 
-		const text = exportString(gameAppTiles);
+		const text = exportString(gridSize, gameObjects);
 
 		console.log(text);
 	}
@@ -85,9 +63,9 @@ const MapCreator = () => {
 
 		try {
 
-			const game = importString(text);
+			const game = importString(text) as CreateGameProperties;
 
-			createGame(game!);
+			createGame(game);
 
 		} catch (error) {
 
@@ -98,8 +76,8 @@ const MapCreator = () => {
 	const generateGrid = () => {
 
 		createGame({
-			gridSize: 6,
-			vehicles: []
+			gridSize,
+			gameObjects: {}
 		})
 	}
 
@@ -110,7 +88,6 @@ const MapCreator = () => {
 	}, [])
 
 	const canPlaceTiles = selectedTile && isBlockedPlacementTile(selectedTile!);
-
 
 	const hasSelectedObject = selectedTile && getGameObject(selectedTile!);
 
@@ -126,6 +103,19 @@ const MapCreator = () => {
 						Editor
 					</Typography>
 					<Typography pb={2}>
+						Grid size ({gridSize})
+					</Typography>
+					<Box>
+						<ButtonGroup size="small" fullWidth>
+							<Button onClick={() => setGridSize(gridSize - 1)} variant="outlined">
+								Decrease
+							</Button>
+							<Button onClick={() => setGridSize(gridSize + 1)} variant="outlined">
+								Increase
+							</Button>
+						</ButtonGroup>
+					</Box>
+					<Typography py={2}>
 						Vehicle orientation
 					</Typography>
 					<Box>
@@ -218,7 +208,7 @@ const MapCreator = () => {
 								</Button>}
 								{!hasSelectedObject && <Button
 									startIcon={<AddIcon />}
-									onClick={() => createObject()}
+									onClick={() => createObject(selectedTile)}
 									fullWidth
 									color="success"
 									disabled={Boolean(canPlaceTiles)}

@@ -2,7 +2,7 @@ import { Box } from '@mui/system';
 import { useAppTiles } from 'Hooks/useAppTiles';
 import React from 'react';
 import { RootStateOrAny, useSelector } from 'react-redux';
-import { GameState, GameTileCoordinate } from 'Types/gameTypes';
+import { GameObject, GameState, GameTileCoordinate, MoveTurn } from 'Types/gameTypes';
 import useStyles from './Styles';
 interface AccessibleTileProperties {
 	tileProperties: GameTileCoordinate;
@@ -15,34 +15,44 @@ const AccessibleTile = ({
 	const { xPosition, yPosition } = tileProperties;
 
 	const {
-		moveVehicle,
+		moveObject,
 	} = useAppTiles();
 
 	const {
-		selectedVehicle,
+		selectedObject,
 	}: GameState = useSelector((state: RootStateOrAny) => state.gameReducer);
 
 	const classes = useStyles();
 
 	const moveToTile = () => {
 
-		if (Boolean(selectedVehicle)) {
+		if (Boolean(selectedObject)) {
 
 			let newXPosition = xPosition;
 
 			let newYPosition = yPosition;
-			// Make sure vehicles cant move out of bounds
-			if (newYPosition > selectedVehicle!.yPosition) {
+			// Make sure object cant move out of bounds
+			if (newYPosition > selectedObject!.yPosition) {
 
-				newYPosition = newYPosition - selectedVehicle!.size + 1;
+				newYPosition = newYPosition - selectedObject!.size + 1;
 			}
 
-			if (newXPosition > selectedVehicle!.xPosition) {
+			if (newXPosition > selectedObject!.xPosition) {
 
-				newXPosition = newXPosition - selectedVehicle!.size + 1;
+				newXPosition = newXPosition - selectedObject!.size + 1;
 			}
 
-			moveVehicle(selectedVehicle!, newXPosition, newYPosition);
+			const gameObject = selectedObject as GameObject;
+
+			const moveTurn: MoveTurn = {
+				gameObject,
+				fromX: gameObject.xPosition,
+				fromY: gameObject.yPosition,
+				toX: newXPosition,
+				toY: newYPosition,
+			}
+
+			moveObject(moveTurn);
 		}
 	}
 

@@ -1,5 +1,5 @@
 
-export const generateKey = (length: number = 16) => {
+export const generateKey = (length: number = 8) => {
 
 	let key = '';
 

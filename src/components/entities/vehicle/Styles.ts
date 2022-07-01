@@ -1,4 +1,3 @@
-import { alpha } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
 interface VehicleCssProps {
@@ -7,8 +6,8 @@ interface VehicleCssProps {
 
 const useStyles = makeStyles(() => ({
 	vehicleContainer: {
-		height: 125,
-		width: 125,
+		height: 64,
+		width: 64,
 		display: 'flex',
 		justifyContent: 'center',
 		cursor: 'pointer',
@@ -18,10 +17,10 @@ const useStyles = makeStyles(() => ({
 		}
 	},
 	vehicleBox: ({ background }: VehicleCssProps) => ({
-		background: alpha(background, 1),
-		fontSize: 64,
-		height: 125,
-		width: 125,
+		background,
+		fontSize: 32,
+		height: 64,
+		width: 64,
 		position: 'absolute',
 		display: 'flex',
 		justifyContent: 'center',

@@ -6,8 +6,8 @@ interface CreateTileCssProps {
 
 const useStyles = makeStyles(() => ({
 	createTileContainer: ({ tileColor }: CreateTileCssProps) => ({
-		width: 125,
-		height: 125,
+		width: 64,
+		height: 64,
 		display: 'flex',
 		justifyContent: 'center',
 		alignItems: 'center',

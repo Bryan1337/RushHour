@@ -3,7 +3,11 @@ import { Box } from '@mui/system';
 import { useAppTiles } from 'Hooks/useAppTiles';
 import { useCreator } from 'Hooks/useCreator';
 import { useGame } from 'Hooks/useGame';
-import React from 'react';
+import { useSolverWorker } from 'Hooks/useSolverWorker';
+import React, { useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
+import { CreateGameProperties } from 'Types/gameTypes';
+import { PageParams, Pages } from 'Types/pageTypes';
 import levelData from '../../../levels/levels.json';
 
 export interface Achievement {
@@ -20,8 +24,10 @@ export interface LevelData {
 const LevelSelection = () => {
 
 	const {
-		importString
+		importString,
 	} = useGame();
+
+	const history = useHistory();
 
 	const {
 		createGame,
@@ -32,21 +38,48 @@ const LevelSelection = () => {
 		setCreatorModeEnabled,
 	} = useCreator()
 
+	const {
+		solveGame,
+	} = useSolverWorker();
+
 	const loadLevel = (levelNr: number) => {
 
-		const level: LevelData = levelData[levelNr];
+		// const level: LevelData = levelData[levelNr];
 
-		if (Boolean(level)) {
+		// if (Boolean(level)) {
 
-			const game = importString(level.game);
+		// 	const game = importString(level.game);
 
-			createGame(game!);
+		// 	createGame(game as CreateGameProperties);
 
-			createGameProperties(level);
+		// 	createGameProperties(level);
 
-			setCreatorModeEnabled(false);
-		}
+		// 	setCreatorModeEnabled(false);
+		// }
+
+		history.push(Pages.PlayLevel.replace(PageParams.LevelId, levelNr));
 	}
+
+	const solveAll = async() => {
+
+		levelData.forEach(async (levelData: LevelData) => {
+
+			const game = importString(levelData.game) as CreateGameProperties;
+
+			const turns = await solveGame(game);
+
+			console.log(`Level ${levelData.level} solved in ${turns.length} turns`);
+
+			// console.log({
+			// 	turns
+			// })
+		})
+	}
+
+	useEffect(() => {
+
+		// solveAll();
+	}, [])
 
 	return (
 		<Box

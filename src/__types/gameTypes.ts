@@ -12,8 +12,6 @@ export enum GameObjectTypes {
 	Wall,
 }
 export interface GameVehicle extends GameObject {
-	orientation: AppCarOrientations;
-	size: GameObjectSizes;
 	type?: GameObjectTypes;
 	color?: string;
 }
@@ -28,13 +26,56 @@ export interface GameTileCoordinate {
 	yPosition: number;
 }
 
-export interface GameTileProperties extends GameTileCoordinate {
-	isWinTile: boolean;
+export type WallKey = "_";
+
+export type PlayerVehicleKey = "X";
+
+export enum GameObjectKeys {
+	Player = "X",
+	Wall = "_",
+	Separator = ":",
+	EmptyTile = ".",
 }
 
+export type VehicleKey =
+	"A" |
+	"B" |
+	"C" |
+	"D" |
+	"E" |
+	"F" |
+	"G" |
+	"H" |
+	"I" |
+	"J" |
+	"K" |
+	"L" |
+	"M" |
+	"N" |
+	"O" |
+	"P" |
+	"Q" |
+	"R" |
+	"S" |
+	"T" |
+	"U" |
+	"V" |
+	"W" |
+	PlayerVehicleKey;
+
+
+export type GameObjectKey = VehicleKey | WallKey | PlayerVehicleKey;
+
 export interface GameObject extends GameTileCoordinate {
+	size: GameObjectSizes;
+	orientation: AppCarOrientations;
 	key: string;
-	type: GameObjectTypes;
+	type?: GameObjectTypes;
+	color?: string;
+}
+
+export interface GameObjectMap {
+	[tileKey: string]: GameObject;
 }
 
 export enum AppCarOrientations {
@@ -47,14 +88,19 @@ export interface GameTileMatrix<T> {
 	}
 }
 
+export interface GameTileMatrix2<T> {
+	[tileKey: string]: T
+}
+
 export interface CreateGameProperties {
 	gridSize: number;
-	vehicles: Array<GameVehicle>;
-	walls?: Array<GameObject>;
+	gameObjects: GameObjectMap;
 }
 
 export interface MoveTurn {
-	vehicle: GameVehicle;
+	gameObject: GameObject;
+	fromX: number;
+	fromY: number;
 	toX: number;
 	toY: number;
 }
@@ -111,17 +157,17 @@ export enum AppTileIndices {
 
 export interface GameState {
 	gridSize: number;
-	gameAppTiles: GameTileMatrix<GameTileProperties>;
-	selectedVehicle: GameVehicle | null;
-	selectedTile: GameTileProperties | null;
+	gameTiles: {
+		[tileKey: string]: GameTileCoordinate;
+	};
+	selectedObject: GameObject | null;
+	selectedTile: GameTileCoordinate | null;
 	placementDirection: AppCarOrientations;
 	placementLength: number;
 	placementType: GameObjectTypes;
-	moveCounter: number;
 	turnQueue: Array<MoveTurn>;
-	vehicles: Array<GameVehicle>;
-	levelData: LevelData | null;
-	undoQueue: Array<Array<GameVehicle>>; // use creategameprops
-	redoQueue: Array<Array<GameVehicle>>;
-	walls: Array<GameObject>;
+	gameObjects: GameObjectMap,
+	levelData: LevelData | {};
+	undoQueue: Array<MoveTurn>;
+	redoQueue: Array<MoveTurn>;
 }

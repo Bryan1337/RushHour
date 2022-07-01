@@ -11,7 +11,7 @@ interface GameVehicleProperties {
 const Vehicle = ({ vehicle }: GameVehicleProperties) => {
 
 	const {
-		selectVehicle
+		selectObject
 	} = useAppTiles();
 
 	const classes = useStyles({ background: `${vehicle.color}` });
@@ -20,10 +20,11 @@ const Vehicle = ({ vehicle }: GameVehicleProperties) => {
 		<Box className={classes.vehicleContainer}>
 			<Box
 				className={classes.vehicleBox}
-				onClick={() => selectVehicle(vehicle)}>
+				onClick={() => selectObject(vehicle)}>
 				<Box className={classes.vehicle}>
 					{vehicle.type === GameObjectTypes.Player && "🚗"}
 					{vehicle.type === GameObjectTypes.Default && "🚓"}
+
 				</Box>
 			</Box>
 		</Box>

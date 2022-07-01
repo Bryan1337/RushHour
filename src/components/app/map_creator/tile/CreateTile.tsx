@@ -1,14 +1,13 @@
-import Vehicle from 'Components/entities/vehicle/Vehicle';
-import Wall from 'Components/entities/wall/Wall';
+import GameObjectTile from 'Components/grid/tile/object/GameObjectTile';
 import { useAppTiles } from 'Hooks/useAppTiles';
 import { useGameObject } from 'Hooks/useGameObject';
 import { usePlacement } from 'Hooks/usePlacement';
 import React from 'react';
-import { GameTileProperties } from 'Types/gameTypes';
+import { GameTileCoordinate } from 'Types/gameTypes';
 import useStyles from './Styles';
 
 interface CreateTileTileProperties {
-	tileProperties: GameTileProperties
+	tileProperties: GameTileCoordinate
 }
 
 const CreateTile = ({ tileProperties }: CreateTileTileProperties) => {
@@ -18,8 +17,7 @@ const CreateTile = ({ tileProperties }: CreateTileTileProperties) => {
 	} = useAppTiles();
 
 	const {
-		getWall,
-		getVehicle,
+		getGameObject,
 	} = useGameObject();
 
 	const {
@@ -28,9 +26,7 @@ const CreateTile = ({ tileProperties }: CreateTileTileProperties) => {
 		isBlockedPlacementTile,
 	} = usePlacement();
 
-	const vehicle = getVehicle(tileProperties);
-
-	const wall = getWall(tileProperties);
+	const gameObject = getGameObject(tileProperties);
 
 	const isSelected = isSelectedTile(tileProperties);
 
@@ -67,8 +63,7 @@ const CreateTile = ({ tileProperties }: CreateTileTileProperties) => {
 				onClick={() => setSelectedTile(tileProperties)}
 				className={classes.createTileContainer}>
 				<span className={classes.createTileBorder} />
-				{wall && <Wall />}
-				{vehicle && <Vehicle vehicle={vehicle} />}
+				{gameObject && <GameObjectTile object={gameObject} />}
 			</div>
 		</>
 

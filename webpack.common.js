@@ -34,6 +34,7 @@ module.exports = {
             Types: path.resolve(__dirname, 'src/__types'),
             Hooks: path.resolve(__dirname, 'src/hooks'),
             Classes: path.resolve(__dirname, 'src/classes'),
+            Workers: path.resolve(__dirname, 'src/workers'),
         }
     },
     optimization: {
@@ -46,6 +47,10 @@ module.exports = {
     },
     module: {
         rules: [
+            {
+                test: /\.worker\.(t|j)s$/,
+                loader: "worker-loader",
+            },
             {
                 test: /\.(t|j)sx?$/,
                 loader: 'esbuild-loader',

@@ -8,6 +8,7 @@ interface GameObjectTileProperties {
 }
 
 const GameObjectTile = ({ object }: GameObjectTileProperties) => {
+
 	return (
 		<>
 			{object.type === GameObjectTypes.Wall && <Wall />}

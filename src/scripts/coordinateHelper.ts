@@ -20,3 +20,8 @@ export const getDimension = (orientation: AppCarOrientations) : TileDimensions =
 
 	throw new Error(`Wrong orientation defined (${orientation}`);
 }
+
+export const getCoordinateTileKey = (xPosition: number, yPosition: number) => {
+
+	return `${xPosition}x${yPosition}`;
+}

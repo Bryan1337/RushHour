@@ -1,28 +1,39 @@
-import { cloneDeep, isEmpty } from 'lodash';
 import { AnyAction } from 'redux';
-import { getDimension, getExitYPosition } from 'Scripts/coordinateHelper';
-import { AppCarOrientations, CreateGameProperties, GameObjectSizes, GameObjectTypes, GameState, GameTileMatrix, GameTileProperties } from 'Types/gameTypes';
+import { getCoordinateTileKey, getDimension, getExitYPosition } from 'Scripts/coordinateHelper';
+import { AppCarOrientations, CreateGameProperties, GameObjectSizes, GameObjectTypes, GameState, GameTileCoordinate, GameTileMatrix2 } from 'Types/gameTypes';
 import { LevelData } from './../components/app/level_selection/LevelSelection';
+import { GameObject, MoveTurn } from './../__types/gameTypes';
 
 export const initialAppState: GameState = {
 	gridSize: 6,
-	selectedVehicle: null,
+	selectedObject: null,
 	selectedTile: null,
-	gameAppTiles: {},
+	gameTiles: {},
 	placementDirection: AppCarOrientations.Horizontal,
 	placementLength: GameObjectSizes.Small,
 	placementType: GameObjectTypes.Default,
-	moveCounter: 0,
+	gameObjects: {},
+	levelData: {},
 	turnQueue: [],
-	vehicles: [],
-	walls: [],
-	levelData: null,
 	undoQueue: [],
 	redoQueue: [],
 }
 
 export const gameReducer = (state: GameState = initialAppState, action: AnyAction) => {
 	switch (action.type) {
+		case 'SET_GRID_SIZE': {
+
+			const maxSize = 10;
+
+			const minSize = 3;
+
+			const newGridSize = Math.min(maxSize, Math.max(minSize, action.size));
+
+			return {
+				...state,
+				gridSize: newGridSize,
+			}
+		}
 		case 'SET_PLACEMENT_TYPE': {
 
 			let newPlacementLength = state.placementLength
@@ -48,17 +59,9 @@ export const gameReducer = (state: GameState = initialAppState, action: AnyActio
 				turnQueue: action.queue,
 			}
 		}
-		case 'SET_GRID_TILES': {
-			return {
-				...state,
-				gameAppTiles: {
-					...action.grid,
-				}
-			}
-		}
 		case 'SET_PLACEMENT_LENGTH': {
 
-			const { selectedTile, placementDirection, gridSize, gameAppTiles } = state;
+			const { selectedTile, placementDirection, gridSize } = state;
 
 			const { length } = action;
 
@@ -67,10 +70,6 @@ export const gameReducer = (state: GameState = initialAppState, action: AnyActio
 				const dimension = getDimension(placementDirection);
 
 				if (selectedTile![dimension] + length >= gridSize) {
-
-					const newTiles = {
-						...gameAppTiles
-					}
 
 					const newSelectedTile = {
 						...selectedTile
@@ -82,7 +81,6 @@ export const gameReducer = (state: GameState = initialAppState, action: AnyActio
 
 					return {
 						...state,
-						gameAppTiles: newTiles,
 						selectedTile: newSelectedTile,
 						placementLength: length,
 					}
@@ -96,7 +94,7 @@ export const gameReducer = (state: GameState = initialAppState, action: AnyActio
 		}
 		case 'SET_PLACEMENT_DIRECTION': {
 
-			const { selectedTile, placementLength, gridSize, gameAppTiles } = state;
+			const { selectedTile, placementLength, gridSize } = state;
 
 			const { direction } = action;
 
@@ -105,10 +103,6 @@ export const gameReducer = (state: GameState = initialAppState, action: AnyActio
 				const dimension = getDimension(direction);
 
 				if (selectedTile![dimension] + placementLength >= gridSize) {
-
-					const newTiles = {
-						...gameAppTiles
-					}
 
 					const newSelectedTile = {
 						...selectedTile
@@ -120,7 +114,6 @@ export const gameReducer = (state: GameState = initialAppState, action: AnyActio
 
 					return {
 						...state,
-						gameAppTiles: newTiles,
 						selectedTile: newSelectedTile,
 						placementDirection: direction,
 					}
@@ -132,134 +125,168 @@ export const gameReducer = (state: GameState = initialAppState, action: AnyActio
 				placementDirection: direction,
 			}
 		}
-		case 'UNDO_VEHICLE_MOVE': {
+		case 'UNDO_MOVE_OBJECT': {
 
-			if(isEmpty(state.undoQueue)) {
+			let { gameObject, toX, toY, fromX, fromY } = action.moveTurn as MoveTurn;
 
-				return {
-					...state,
-				}
+			const newUndoQueue = [...state.undoQueue].filter((_, index) => index !== 0);
+
+			const newRedoQueue = [...state.redoQueue ];
+
+			const oldCoordinate = getCoordinateTileKey(toX, toY)
+
+			const newCoordinate = getCoordinateTileKey(fromX, fromY)
+
+			const newGameObject = {
+				...gameObject,
+				xPosition: fromX,
+				yPosition: fromY,
 			}
 
-			const newUndoQueue = cloneDeep(state.undoQueue);
+			newRedoQueue.unshift({
+				gameObject: newGameObject,
+				toX,
+				toY,
+				fromX,
+				fromY,
+			})
 
-			const lastVehicleState = newUndoQueue.pop();
+			const newGameObjects = {
+				...state.gameObjects
+			}
 
-			const newRedoQueue = cloneDeep(state.redoQueue);
+			delete newGameObjects[oldCoordinate];
 
-			newRedoQueue.push(state.vehicles);
+			newGameObjects[newCoordinate] = newGameObject;
 
 			return {
 				...state,
-				vehicles: cloneDeep(lastVehicleState),
+				gameObjects: newGameObjects,
 				undoQueue: newUndoQueue,
 				redoQueue: newRedoQueue,
-				moveCounter: state.moveCounter - 1,
+				selectedObject: null,
 			}
 		}
-		case 'REDO_VEHICLE_MOVE': {
+		case 'REDO_MOVE_OBJECT': {
 
-			if (isEmpty(state.redoQueue)) {
+			const { gameObject, fromX, fromY, toX, toY } = action.moveTurn as MoveTurn;
 
-				return {
-					...state,
-				}
+			const oldCoordinate = getCoordinateTileKey(fromX, fromY);
+
+			const newCoordinate = getCoordinateTileKey(toX, toY);
+
+			const newGameObjects = {
+				...state.gameObjects
 			}
 
-			const newRedoQueue = cloneDeep(state.redoQueue);
+			const newUndoQueue = [...state.undoQueue]
 
-			const nextVehicleState = newRedoQueue.pop();
+			const newRedoQueue = [...state.redoQueue].filter((_, index) => index !== 0);
 
-			const newUndoQueue = cloneDeep(state.undoQueue);
+			const newGameObject = {
+				...gameObject,
+				xPosition: toX,
+				yPosition: toY,
+			};
 
-			newUndoQueue.push(state.vehicles);
+			newUndoQueue.unshift({
+				gameObject: newGameObject,
+				fromX: gameObject.xPosition,
+				fromY: gameObject.yPosition,
+				toX,
+				toY,
+			})
+
+			delete newGameObjects[oldCoordinate];
+
+			newGameObjects[newCoordinate] = newGameObject;
 
 			return {
 				...state,
-				vehicles: cloneDeep(nextVehicleState),
+				gameObjects: newGameObjects,
 				undoQueue: newUndoQueue,
 				redoQueue: newRedoQueue,
-				moveCounter: state.moveCounter + 1,
+				selectedObject: null,
 			}
 		}
-		case 'MOVE_VEHICLE': {
+		case 'MOVE_OBJECT': {
 
-			let { vehicle, newXPosition, newYPosition } = action;
+			const { gameObject, fromX, fromY, toX, toY } = action.moveTurn as MoveTurn;
 
-			const newVehicles = [ ...state.vehicles ];
+			const oldCoordinate = getCoordinateTileKey(fromX, fromY);
 
-			let moveCounter = state.moveCounter;
+			const newCoordinate = getCoordinateTileKey(toX, toY);
 
-			for(const index in newVehicles) {
-
-				if(vehicle.key === newVehicles[index].key) {
-
-					if(!(
-						newVehicles[index].xPosition === newXPosition &&
-						newVehicles[index].yPosition === newYPosition)
-					) {
-
-						moveCounter += 1;
-					}
-
-					newVehicles[index] = {
-						...newVehicles[index],
-						xPosition: newXPosition,
-						yPosition: newYPosition,
-					}
-				}
+			const newGameObjects = {
+				...state.gameObjects
 			}
+
+			const newUndoQueue = [...state.undoQueue]
+
+			const newGameObject = {
+				...gameObject,
+				xPosition: toX,
+				yPosition: toY,
+			};
+
+			newUndoQueue.unshift({
+				gameObject: newGameObject,
+				fromX: gameObject.xPosition,
+				fromY: gameObject.yPosition,
+				toX,
+				toY,
+			})
+
+			delete newGameObjects[oldCoordinate];
+
+			newGameObjects[newCoordinate] = newGameObject;
 
 			return {
 				...state,
-				vehicles: newVehicles,
-				selectedVehicle: null,
-				moveCounter: moveCounter,
-				undoQueue: [
-					...state.undoQueue,
-					cloneDeep(state.vehicles),
-				],
+				gameObjects: newGameObjects,
+				undoQueue: newUndoQueue,
 				redoQueue: [],
+				selectedObject: null,
 			}
 		}
 		case 'CREATE_GAME': {
 
-			const { gridSize, vehicles, walls = [] } : CreateGameProperties = action.game;
+			const { gridSize, gameObjects } : CreateGameProperties = action.game;
 
-			const gameAppTiles: GameTileMatrix<GameTileProperties> = {}
+			const newGameObjects = {};
+
+			const gameTiles: GameTileMatrix2<GameTileCoordinate> = {}
 
 			Array.from({ length: gridSize }).forEach((_, yIndex) => {
 
 				Array.from({ length: gridSize }).forEach((_, xIndex) => {
 
-					gameAppTiles[yIndex] = {
-						...gameAppTiles[yIndex],
-						[xIndex]: {
-							xPosition: xIndex,
-							yPosition: yIndex,
-							isWinTile: false,
-						}
+					gameTiles[getCoordinateTileKey(xIndex, yIndex)] = {
+						xPosition: xIndex,
+						yPosition: yIndex,
 					}
 				})
 			})
 
-			gameAppTiles[getExitYPosition(gridSize)][gridSize] = {
-				yPosition: getExitYPosition(gridSize) - 1,
+			Object.keys(gameObjects).forEach((coordinate) => {
+
+				newGameObjects[coordinate] = gameObjects[coordinate];
+			})
+
+			const exitYPosition = getExitYPosition(gridSize);
+			/** Win tile */
+			gameTiles[getCoordinateTileKey(gridSize, exitYPosition)] = {
+				yPosition: exitYPosition,
 				xPosition: gridSize,
-				isWinTile: true,
 			}
 
 			return {
 				...state,
-				gameAppTiles,
-				vehicles: [
-					...vehicles,
-				],
-				walls: [
-					...walls,
-				],
+				gameTiles,
+				gameObjects: newGameObjects,
 				gridSize,
-				moveCounter: 0,
+				undoQueue: [],
+				redoQueue: [],
 			}
 		}
 		case 'CREATE_GAME_PROPERTIES': {
@@ -271,46 +298,31 @@ export const gameReducer = (state: GameState = initialAppState, action: AnyActio
 				levelData,
 			}
 		}
-		case 'ADD_VEHICLE': {
+		case 'ADD_OBJECT': {
 
-			const newVehicles = [
-				...state.vehicles,
-				action.vehicle,
-			]
+			const { xPosition, yPosition } = action.gameObject as GameObject;
+
+			const newGameObjects = {
+				...state.gameObjects,
+				[getCoordinateTileKey(xPosition, yPosition)]: action.gameObject
+			}
 
 			return {
 				...state,
-				vehicles: newVehicles,
-				selectedTile: null,
+				gameObjects: newGameObjects,
 			}
 		}
-		case 'ADD_WALL': {
-
-			const newWalls = [
-				...state.walls,
-				action.tile,
-			]
-
+		case 'SELECT_OBJECT': {
 			return {
 				...state,
-				walls: newWalls,
-			}
-		}
-		case 'SET_SELECTED_VEHICLE': {
-			return {
-				...state,
-				selectedVehicle: action.vehicle,
+				selectedObject: action.gameObject,
 			}
 		}
 		case 'SET_SELECTED_TILE': {
 
 			const { tile } = action;
 
-			const { gridSize, gameAppTiles, placementLength, placementDirection } = state;
-
-			const newTiles = {
-				...gameAppTiles,
-			}
+			const { gridSize, placementLength, placementDirection } = state;
 
 			const newSelectedTile = {
 				...tile,
@@ -329,40 +341,22 @@ export const gameReducer = (state: GameState = initialAppState, action: AnyActio
 
 			return {
 				...state,
-				gameAppTiles: cloneDeep(newTiles),
 				selectedTile: newSelectedTile,
 			}
 		}
-		case 'REMOVE_WALL': {
+		case 'REMOVE_OBJECT': {
 
-			const { walls } = state;
-
-			const { xPosition, yPosition } = action.tile;
-
-			const newWalls = [ ...walls ].filter((wall) => !(
-				wall.xPosition === xPosition &&
-				wall.yPosition === yPosition
-			));
-
-			return {
-				...state,
-				walls: newWalls,
-			}
-		}
-		case 'REMOVE_VEHICLE': {
-
-			const { vehicles } = state;
+			const newGameObjects = { ...state.gameObjects }
 
 			const { xPosition, yPosition } = action.tile;
 
-			const newVehicles = [...vehicles].filter((vehicle) => (
-				vehicle.xPosition === xPosition &&
-				vehicle.yPosition === yPosition
-			));
+			const coordinate = getCoordinateTileKey(xPosition, yPosition);
+
+			delete newGameObjects[coordinate];
 
 			return {
 				...state,
-				vehicles: newVehicles,
+				gameObjects: newGameObjects,
 			}
 		}
 		default:

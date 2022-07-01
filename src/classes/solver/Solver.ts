@@ -1,6 +1,6 @@
 import { cloneDeep } from 'lodash';
 import { getExitYPosition } from 'Scripts/coordinateHelper';
-import { AppCarOrientations, CreateGameProperties, GameObject, GameObjectTypes, GameTileCoordinate, GameTileMatrix, GameVehicle, MoveTurn } from 'Types/gameTypes';
+import { AppCarOrientations, CreateGameProperties, GameObject, GameObjectTypes, GameTileCoordinate, GameTileMatrix, MoveTurn } from 'Types/gameTypes';
 
 export interface TraversalNode {
 	turn?: MoveTurn;
@@ -13,11 +13,13 @@ export interface NodeList {
 
 export default class Solver {
 
+	public debug = false;
+
 	public gridSize: number = 0;
 	public solutionLength: number = 0;
 	public maxQueueLength: number = 0;
 
-	public vehicles: Array<GameVehicle> = [];
+	public gameObjectList: Array<GameObject> = [];
 	public walls: Array<GameObject> = [];
 	public positions: Array<GameTileCoordinate> = [];
 	public winningTurns: Array<MoveTurn>;
@@ -29,21 +31,26 @@ export default class Solver {
 
 	constructor(game: CreateGameProperties) {
 
-		const { gridSize, vehicles, walls = [] } = game;
+		const { gridSize, gameObjects } = game;
 
 		this.gridSize = gridSize;
 
+		const objectList = Object.keys(gameObjects).map((coordinate) => ({
+			...gameObjects[coordinate]
+		}))
+
+		this.walls = objectList.filter((gameObject) => gameObject.type === GameObjectTypes.Wall);
+
+		const gameObjectList = objectList.filter((gameObject) => gameObject.type !== GameObjectTypes.Wall);
 		/* Expects player car to be index 0 */
-		this.vehicles = vehicles.sort((a, b) => (
+		this.gameObjectList = gameObjectList.sort((a, b) => (
 			Number(GameObjectTypes.Player === b.type) -
 			Number(GameObjectTypes.Player === a.type)
 		));
 
-		this.walls = walls;
-
-		this.positions = vehicles.map(vehicle => ({
-			xPosition: vehicle.xPosition,
-			yPosition: vehicle.yPosition,
+		this.positions = gameObjectList.map((gameObject: GameObject) => ({
+			xPosition: gameObject.xPosition,
+			yPosition: gameObject.yPosition,
 		}));
 
 		this.rootNode = {
@@ -59,11 +66,11 @@ export default class Solver {
 			return false;
 		}
 
-		const [playerVehicle] = this.vehicles;
+		const [playerObject] = this.gameObjectList;
 
 		const [{ xPosition }] = node.positions;
 
-		return (xPosition === this.gridSize - playerVehicle.size);
+		return (xPosition === this.gridSize - playerObject.size);
 	}
 
 	private printWinningSequence = (node: TraversalNode | null) => {
@@ -101,19 +108,19 @@ export default class Solver {
 
 				let found = false;
 
-				for (var vehicleIndex = 0; vehicleIndex < this.vehicles.length; vehicleIndex++) {
+				for (var gameObjectIndex = 0; gameObjectIndex < this.gameObjectList.length; gameObjectIndex++) {
 
-					var position: GameTileCoordinate = node.positions[vehicleIndex];
+					var position: GameTileCoordinate = node.positions[gameObjectIndex];
 
 					const { yPosition, xPosition } = position;
 
-					const vehicle = this.vehicles[vehicleIndex];
+					const gameObject = this.gameObjectList[gameObjectIndex];
 
-					if (vehicle.orientation == AppCarOrientations.Horizontal && yPosition === yIndex) { // is horizontal and on this row?
+					if (gameObject.orientation == AppCarOrientations.Horizontal && yPosition === yIndex) { // is horizontal and on this row?
 
-						if (xPosition + vehicle.size - 1 >= xIndex && xPosition <= xIndex) { // does it cover this cell?
+						if (xPosition + gameObject.size - 1 >= xIndex && xPosition <= xIndex) { // does it cover this cell?
 
-							line = line + String.fromCharCode(vehicleIndex + 65); // put an alphabet character id for the car
+							line = line + String.fromCharCode(gameObjectIndex + 65); // put an alphabet character id for the car
 
 							found = true;
 
@@ -121,11 +128,11 @@ export default class Solver {
 						}
 					}
 					// same for vertical
-					if (vehicle.orientation == AppCarOrientations.Vertical && xPosition === xIndex) {
+					if (gameObject.orientation == AppCarOrientations.Vertical && xPosition === xIndex) {
 
-						if (yPosition + vehicle.size - 1 >= yIndex && yPosition <= yIndex) {
+						if (yPosition + gameObject.size - 1 >= yIndex && yPosition <= yIndex) {
 
-							line = line + String.fromCharCode(vehicleIndex + 65);
+							line = line + String.fromCharCode(gameObjectIndex + 65);
 
 							found = true;
 
@@ -199,25 +206,27 @@ export default class Solver {
 		})
 
 		// iterate over cells
-		for (let yIndex = 0; yIndex < this.gridSize; yIndex++) {
+		// for (let yIndex = 0; yIndex < this.gridSize; yIndex++) {
 
 			for (let xIndex = 0; xIndex < this.gridSize; xIndex++) {
 
+				for (let yIndex = 0; yIndex < this.gridSize; yIndex++) {
+
 				let found = false;
 
-				for (let vehicleIndex = 0; vehicleIndex < this.vehicles.length; vehicleIndex++) {
+				for (let gameObjectIndex = 0; gameObjectIndex < this.gameObjectList.length; gameObjectIndex++) {
 
-					const vehicle = this.vehicles[vehicleIndex];
+					const gameObject = this.gameObjectList[gameObjectIndex];
 
-					var position: GameTileCoordinate = node.positions[vehicleIndex];
+					var position: GameTileCoordinate = node.positions[gameObjectIndex];
 
 					const { yPosition, xPosition } = position;
 
-					if (vehicle.orientation == AppCarOrientations.Horizontal && yPosition == yIndex) { // is horizontal and on this row?
+					if (gameObject.orientation == AppCarOrientations.Horizontal && yPosition == yIndex) { // is horizontal and on this row?
 
-						if (xPosition + vehicle.size - 1 >= xIndex && xPosition <= xIndex) { // does it cover this cell?
+						if (xPosition + gameObject.size - 1 >= xIndex && xPosition <= xIndex) { // does it cover this cell?
 
-							matrix[yIndex][xIndex] = vehicleIndex;
+							matrix[yIndex][xIndex] = gameObjectIndex;
 
 							found = true;
 
@@ -225,11 +234,11 @@ export default class Solver {
 						}
 					}
 
-					if (vehicle.orientation == AppCarOrientations.Vertical && xPosition == xIndex) { // is vertical and on this col?
+					if (gameObject.orientation == AppCarOrientations.Vertical && xPosition == xIndex) { // is vertical and on this col?
 
-						if (yPosition + vehicle.size - 1 >= yIndex && yPosition <= yIndex) { // does it cover this cell?
+						if (yPosition + gameObject.size - 1 >= yIndex && yPosition <= yIndex) { // does it cover this cell?
 
-							matrix[yIndex][xIndex] = vehicleIndex;
+							matrix[yIndex][xIndex] = gameObjectIndex;
 
 							found = true;
 
@@ -251,7 +260,7 @@ export default class Solver {
 
 			const { yPosition, xPosition } = wall;
 
-			matrix[yPosition][xPosition] = wallIndex + this.vehicles.length;
+			matrix[yPosition][xPosition] = wallIndex + this.gameObjectList.length;
 		}
 
 		return matrix;
@@ -263,9 +272,9 @@ export default class Solver {
 
 		while (Boolean(node.parentNode)) {
 
-			turns.push(node?.turn);
+			turns.push(node?.turn as MoveTurn);
 
-			node = node?.parentNode;
+			node = node?.parentNode as TraversalNode;
 		}
 
 		return turns;
@@ -277,9 +286,9 @@ export default class Solver {
 	}
 
 	/*
-		We not limited to moving less than 1 tile per turn.
+		We're not limited to moving less than 1 tile per turn.
 		By simply remove turns from tiles in between
-		For example: A -> B, B -> C, C -> D, could by simplified as A to D
+		For example: A -> B, B -> C, C -> D, could by simplified as A -> D
 	*/
 	public optimizeTurns = (turns: Array<MoveTurn>) => {
 
@@ -289,10 +298,16 @@ export default class Solver {
 
 			const previousTurn = turns[index - 1];
 
-			if(!Boolean(index) || turn.vehicle.key !== previousTurn.vehicle.key) {
+			// find series of turns with same keys, only keep first and last
+
+			if(!Boolean(index) || turn.gameObject.key !== previousTurn.gameObject.key) {
 
 				optimizedTurns.push(turn);
 			}
+		})
+
+		console.log({
+			optimizedTurns
 		})
 
 		return optimizedTurns.reverse();
@@ -311,7 +326,7 @@ export default class Solver {
 				this.maxQueueLength = this.nodeQueue.length
 			}
 
-			const currentNode: TraversalNode = this.nodeQueue.pop();
+			const currentNode: TraversalNode = this.nodeQueue.pop() as TraversalNode;
 
 			if (!currentNode) {
 
@@ -323,15 +338,20 @@ export default class Solver {
 
 				const turns = this.getTurnsFromNode(currentNode);
 
-				this.winningTurns = this.optimizeTurns(turns);
+				this.optimizeTurns(turns);
+				this.winningTurns = turns.reverse();
 
 				this.printWinningSequence(currentNode)
 
-				console.log("               ")
-				console.log("---- Stats ----")
-				console.log("Max Queue Length : " + this.maxQueueLength)
-				console.log("Nodes Examined   : " + Object.keys(this.nodes).length)
-				console.log("Solution Length  : " + this.solutionLength)
+				if(this.debug) {
+
+					console.log("               ")
+					console.log("---- Stats ----")
+					console.log("Max Queue Length : " + this.maxQueueLength)
+					console.log("Nodes Examined   : " + Object.keys(this.nodes).length)
+					console.log("Solution Length  : " + this.solutionLength)
+				}
+
 
 				return;
 			}
@@ -341,15 +361,15 @@ export default class Solver {
 			// this populates the 2D matrix so we can easily find empty spaces
 			const matrix = this.createSpaceMatrix(currentNode);
 
-			// iterate over vehicles and for each possible move create a node and put it in the Queue
+			// iterate over gameObjects and for each possible move create a node and put it in the Queue
 
-			this.vehicles.forEach((vehicle: GameVehicle, index) => {
+			this.gameObjectList.forEach((gameObject: GameObject, index) => {
 
 				const currentPosition: GameTileCoordinate | null = currentNode.positions[index];
 
 				const { yPosition, xPosition } = currentPosition;
 
-				if (Boolean(currentPosition) && vehicle.orientation == AppCarOrientations.Vertical) {  // it's vertically oriented
+				if (Boolean(currentPosition) && gameObject.orientation == AppCarOrientations.Vertical) {  // it's vertically oriented
 					// can we move it up?
 					if (yPosition - 1 >= 0) { // there's no wall blocking
 
@@ -366,7 +386,13 @@ export default class Solver {
 								newNode.parentNode = currentNode;
 
 								const turn: MoveTurn = {
-									vehicle,
+									gameObject: {
+										...gameObject,
+										xPosition,
+										yPosition,
+									},
+									fromX: xPosition,
+									fromY: yPosition,
 									toX: newNode.positions[index].xPosition,
 									toY: newNode.positions[index].yPosition,
 								}
@@ -380,9 +406,9 @@ export default class Solver {
 						}
 					}
 					// same thing but for downwards movement
-					if (yPosition + vehicle.size < this.gridSize) {
+					if (yPosition + gameObject.size < this.gridSize) {
 
-						if (matrix[yPosition + vehicle.size][xPosition] < 0) {
+						if (matrix[yPosition + gameObject.size][xPosition] < 0) {
 
 							const newNode = this.cloneNode(currentNode);
 
@@ -393,7 +419,13 @@ export default class Solver {
 								newNode.parentNode = currentNode;
 
 								const turn: MoveTurn = {
-									vehicle,
+									gameObject: {
+										...gameObject,
+										xPosition,
+										yPosition,
+									},
+									fromX: xPosition,
+									fromY: yPosition,
 									toX: newNode.positions[index].xPosition,
 									toY: newNode.positions[index].yPosition,
 								}
@@ -407,8 +439,8 @@ export default class Solver {
 						}
 					}
 				}
-				// all over again but for horizontal vehicles
-				if (vehicle.orientation == AppCarOrientations.Horizontal) {
+				// all over again but for horizontal gameObjects
+				if (gameObject.orientation == AppCarOrientations.Horizontal) {
 
 					if (xPosition - 1 >= 0) {
 
@@ -423,7 +455,13 @@ export default class Solver {
 								newNode.parentNode = currentNode;
 
 								const turn: MoveTurn = {
-									vehicle,
+									gameObject: {
+										...gameObject,
+										xPosition,
+										yPosition,
+									},
+									fromX: xPosition,
+									fromY: yPosition,
 									toX: newNode.positions[index].xPosition,
 									toY: newNode.positions[index].yPosition,
 								}
@@ -437,9 +475,9 @@ export default class Solver {
 						}
 					}
 
-					if (xPosition + vehicle.size < this.gridSize) {
+					if (xPosition + gameObject.size < this.gridSize) {
 
-						if (matrix[yPosition][xPosition + vehicle.size] < 0) {
+						if (matrix[yPosition][xPosition + gameObject.size] < 0) {
 
 							const newNode = this.cloneNode(currentNode);
 
@@ -450,7 +488,13 @@ export default class Solver {
 								newNode.parentNode = currentNode;
 
 								const turn: MoveTurn = {
-									vehicle,
+									gameObject: {
+										...gameObject,
+										xPosition,
+										yPosition,
+									},
+									fromX: xPosition,
+									fromY: yPosition,
 									toX: newNode.positions[index].xPosition,
 									toY: newNode.positions[index].yPosition,
 								}

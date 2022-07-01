@@ -1,7 +1,7 @@
 [
 	{
 		"text": "Level 1",
-		"level": "Easy",
+		"level": "Beginner",
 		"game": "NkBBQS4uLkI6Qy4uRC5COkNYWEQuQi46Qy4uRC4uOkUuLi5GRjpFLkdHRy4=",
 		"achievements": [
 			{
@@ -24,7 +24,7 @@
 	},
 	{
 		"text": "Level 2",
-		"level": "Easy",
+		"level": "Beginner",
 		"game": "NkBBLi5CQkI6QS4uQy5EOlhYLkNFRC46RkZGLkVEOi4uRy5ISDpJSUdKSi4=",
 		"achievements": [
 			{
@@ -47,7 +47,7 @@
 	},
 	{
 		"text": "Level 3",
-		"level": "Easy",
+		"level": "Beginner",
 		"game": "NkBBQkNDRC46QUJFRUQuOlhYRkcuLi46Li5GR0guOi4uSUdILjouLkkuLi4=",
 		"achievements": [
 			{
@@ -70,7 +70,7 @@
 	},
 	{
 		"text": "Level 4",
-		"level": "Easy",
+		"level": "Beginner",
 		"game": "NkBBLi5CLi46QS4uQi4uOkFYWEIuLi46Li5DREREOi4uQy4uRTouLkZGRkU=",
 		"achievements": [
 			{
@@ -93,7 +93,7 @@
 	},
 	{
 		"text": "Level 5",
-		"level": "Easy",
+		"level": "Beginner",
 		"game": "NkAuLkFBQS46QkJCLkMuOlhYLi5DRC46RUVFLkNEOkYuRy5ISDpGLkcuSUk=",
 		"achievements": [
 			{
@@ -116,6 +116,7 @@
 	},
 	{
 		"text": "Level 6",
+		"level": "Beginner",
 		"game": "NkAuLi4uLi46Li5BLi5COlhYQS4uQi46Qy5BRERFOkNGRkdIRTpJSUlHSEU=",
 		"achievements": [
 			{
@@ -138,6 +139,7 @@
 	},
 	{
 		"text": "Level 7",
+		"level": "Beginner",
 		"game": "NkAuQUJCQ0Q6LkEuRUNEOi5YWEUuRi46Li5HRy5GOi4uLkguLjouLi5ILi4=",
 		"achievements": [
 			{
@@ -160,6 +162,7 @@
 	},
 	{
 		"text": "Level 8",
+		"level": "Beginner",
 		"game": "NkBBQUJDREQ6RUVCQ0ZHOi5IWFhGRy46LkguLi4uOi5ILklJSTouLi4uLi4=",
 		"achievements": [
 			{
@@ -182,6 +185,7 @@
 	},
 	{
 		"text": "Level 9",
+		"level": "Beginner",
 		"game": "NkBBQkJDLi46QS5EQy5FOlhYRC4uRS46RkZHR0dIOi4uSS4uSDouLkkuLi4=",
 		"achievements": [
 			{
@@ -204,6 +208,7 @@
 	},
 	{
 		"text": "Level 10",
+		"level": "Beginner",
 		"game": "NkAuQUJCQ0M6LkEuLi5EOi5BLlhYRC46LkUuRkdHOi5FLkZISTouSkpKSEk=",
 		"achievements": [
 			{
@@ -226,6 +231,7 @@
 	},
 	{
 		"text": "Level 11",
+		"level": "Intermediate",
 		"game": "NkBBQkJDLi46QS4uQy4uOkFYWEMuLi46Li5ERUVFOi4uRC4uRjouLkdHR0Y=",
 		"achievements": [
 			{
@@ -248,6 +254,7 @@
 	},
 	{
 		"text": "Level 12",
+		"level": "Intermediate",
 		"game": "NkBBQkIuLkM6QS5ELi5DOlhYRC4uQy46Li5ERUVFOi4uLi5GLjpHR0cuRi4=",
 		"achievements": [
 			{
@@ -270,6 +277,7 @@
 	},
 	{
 		"text": "Level 13",
+		"level": "Intermediate",
 		"game": "NkBBQUJCQy46Li5ELkNFOi5GRFhYRS46R0YuSEhFOkcuLklKSjpHS0tJTEw=",
 		"achievements": [
 			{
@@ -292,6 +300,7 @@
 	},
 	{
 		"text": "Level 14",
+		"level": "Intermediate",
 		"game": "NkBBQUIuLi46Li5CLkNDOkRFWFhGRy46REVISEZHOi4uSS5KSjpLS0kuLi4=",
 		"achievements": [
 			{
@@ -314,6 +323,7 @@
 	},
 	{
 		"text": "Level 15",
+		"level": "Intermediate",
 		"game": "NkAuQUFCQi46Q0NEREVGOkdIWFhFRi46R0hJSkVGOkdISUpLSzouTExNTS4=",
 		"achievements": [
 			{
@@ -336,6 +346,7 @@
 	},
 	{
 		"text": "Level 16",
+		"level": "Intermediate",
 		"game": "NkBBQUJCQ0Q6RS5GRkNEOkVHSFhYRC46LkdISUlJOi4uSC4uLjpKSi4uLi4=",
 		"achievements": [
 			{
@@ -358,6 +369,7 @@
 	},
 	{
 		"text": "Level 17",
+		"level": "Intermediate",
 		"game": "NkBBQkJCLi46QS5DQ0REOlhYRS4uLi46RkZFRy4uOkhISEdJSjpLS0tHSUo=",
 		"achievements": [
 			{
@@ -380,6 +392,7 @@
 	},
 	{
 		"text": "Level 18",
+		"level": "Intermediate",
 		"game": "NkBBQUJDLi46RERCQy4uOkVYWEMuLi46RUZGRi4uOkVHRy4uLjpISEguLi4=",
 		"achievements": [
 			{
@@ -402,6 +415,7 @@
 	},
 	{
 		"text": "Level 19",
+		"level": "Intermediate",
 		"game": "NkAuLkFCQkI6Li5BLi5DOlhYRC4uQy46RUVELkZHOi5ISUlGRzouSEpKSkc=",
 		"achievements": [
 			{
@@ -424,6 +438,7 @@
 	},
 	{
 		"text": "Level 20",
+		"level": "Intermediate",
 		"game": "NkBBLi5CQkI6QUNDRC4uOlhYRUQuRi46Li5FLi5GOi4uR0hIRjouLkdJSUk=",
 		"achievements": [
 			{
@@ -446,6 +461,7 @@
 	},
 	{
 		"text": "Level 21",
+		"level": "Advanced",
 		"game": "NkBBQUJDLi46RC5CQy4uOkRYWEMuLi46REVFRS4uOi4uLi4uLjouLi5GRkY=",
 		"achievements": [
 			{
@@ -468,6 +484,7 @@
 	},
 	{
 		"text": "Level 22",
+		"level": "Advanced",
 		"game": "NkAuLkFCQkI6Qy5BREVFOkNYWEQuLi46LkYuREdHOkhGSUkuSjpIS0tLLko=",
 		"achievements": [
 			{
@@ -490,6 +507,7 @@
 	},
 	{
 		"text": "Level 23",
+		"level": "Advanced",
 		"game": "NkAuLkFBQUI6Li5DRERCOi4uQ1hYQi46Li5FRkdHOi4uRUZISDouLklJSS4=",
 		"achievements": [
 			{
@@ -512,6 +530,7 @@
 	},
 	{
 		"text": "Level 24",
+		"level": "Advanced",
 		"game": "NkAuLkFCQi46LkNBLi4uOkRDWFhFLi46REZGLkUuOkdHRy5ILjpJSS4uSC4=",
 		"achievements": [
 			{
@@ -534,6 +553,7 @@
 	},
 	{
 		"text": "Level 25",
+		"level": "Advanced",
 		"game": "NkBBQUIuQ0M6RERCLi5FOkZYWC5HRS46RkhISEdFOkZJLkpLSzouSS5KTEw=",
 		"achievements": [
 			{
@@ -556,6 +576,7 @@
 	},
 	{
 		"text": "Level 26",
+		"level": "Advanced",
 		"game": "NkAuQS5CQkI6Q0EuREUuOkNYWERFRi46R0hISEVGOkcuSS4uSjouLklLS0o=",
 		"achievements": [
 			{
@@ -578,6 +599,7 @@
 	},
 	{
 		"text": "Level 27",
+		"level": "Advanced",
 		"game": "NkBBQkJDLi46QUREQy4uOlhYRUMuRi46Li5FR0dGOi4uSC4uRjouLkhJSUk=",
 		"achievements": [
 			{
@@ -600,6 +622,7 @@
 	},
 	{
 		"text": "Level 28",
+		"level": "Advanced",
 		"game": "NkBBQUFCLi46Li5DQkREOlhYQy4uLi46RUZDR0dIOkVGSUlJSDpKSktLLkg=",
 		"achievements": [
 			{
@@ -622,6 +645,7 @@
 	},
 	{
 		"text": "Level 29",
+		"level": "Advanced",
 		"game": "NkBBQUEuQi46Li5DLkIuOlhYQy5CRC46RUZGR0dEOkVISEkuSjpLS0tJLko=",
 		"achievements": [
 			{
@@ -644,6 +668,7 @@
 	},
 	{
 		"text": "Level 30",
+		"level": "Advanced",
 		"game": "NkBBLkJDQ0M6QS5CRC4uOkFYWEQuLi46RUVGRi5HOi4uLi4uRzpISElJLkc=",
 		"achievements": [
 			{
@@ -666,6 +691,7 @@
 	},
 	{
 		"text": "Level 31",
+		"level": "Expert",
 		"game": "NkBBQS5CQkI6Li4uQ0REOkVYWEMuRi46RS5HSEhGOklJRy4uRjouLkdKSko=",
 		"achievements": [
 			{
@@ -688,6 +714,7 @@
 	},
 	{
 		"text": "Level 32",
+		"level": "Expert",
 		"game": "NkBBQUJDREQ6Li5CQy4uOlhYQi4uLi46RUZGR0dIOkUuLkkuSDpKSi5JLkg=",
 		"achievements": [
 			{
@@ -710,6 +737,7 @@
 	},
 	{
 		"text": "Level 33",
+		"level": "Expert",
 		"game": "NkAuQUIuQ0M6LkFCLi4uOlhYQi4uLi46REVFRkZHOkRISElKRzpLS0tJSkc=",
 		"achievements": [
 			{
@@ -732,6 +760,7 @@
 	},
 	{
 		"text": "Level 34",
+		"level": "Expert",
 		"game": "NkBBLi5CQkI6QS4uQy5EOlhYLkNFRC46RkZGR0VEOi4uSEdJSTpKSkhLSy4=",
 		"achievements": [
 			{
@@ -754,6 +783,7 @@
 	},
 	{
 		"text": "Level 35",
+		"level": "Expert",
 		"game": "NkAuLkFCQkM6Li5BRC5DOlhYQUQuQy46RUZGRi4uOkVHR0hJLjpKSi5ISS4=",
 		"achievements": [
 			{
@@ -776,6 +806,7 @@
 	},
 	{
 		"text": "Level 36",
+		"level": "Expert",
 		"game": "NkBBQkJCQ0M6QURFRS5GOkFEWFguRi46R0dHSC5GOi4uSUhKSjpLS0kuLi4=",
 		"achievements": [
 			{
@@ -798,6 +829,7 @@
 	},
 	{
 		"text": "Level 37",
+		"level": "Expert",
 		"game": "NkBBQUIuQ0M6RERCLkVGOkdYWC5FRi46R0hISEVGOkcuLklKSjpLSy5JTEw=",
 		"achievements": [
 			{
@@ -820,6 +852,7 @@
 	},
 	{
 		"text": "Level 38",
+		"level": "Expert",
 		"game": "NkBBLi5CQkI6QUNDRC4uOlhYRUQuRi46Li5FR0dGOi4uSElJRjouLkhKSko=",
 		"achievements": [
 			{
@@ -842,6 +875,7 @@
 	},
 	{
 		"text": "Level 39",
+		"level": "Expert",
 		"game": "NkAuLkFCQkI6Li5BQy4uOlhYREMuRS46RkZER0dFOkhJSkouRTpISUtLLi4=",
 		"achievements": [
 			{
@@ -864,6 +898,7 @@
 	},
 	{
 		"text": "Level 40",
+		"level": "Expert",
 		"game": "NkBBQkIuQy46QURFLkNGOkFERVhYRi46R0dHSC5GOi4uSUhKSjpLS0lMTC4=",
 		"achievements": [
 			{
@@ -886,6 +921,7 @@
 	},
 	{
 		"text": "Level 41",
+		"level": "Master",
 		"game": "NkAuLkFCQkM6Li5BLi5DOi4uQVhYQy46Li4uREVFOkZHR0QuLjpGLi5ESEg=",
 		"achievements": [
 
@@ -893,6 +929,7 @@
 	},
 	{
 		"text": "Level 42",
+		"level": "Master",
 		"game": "NkBBQkIuQy46QURFLkNGOkFERVhYRi46R0dHSC5GOi4uSUhKSjpLS0lMTC4=",
 		"achievements": [
 
@@ -900,6 +937,7 @@
 	},
 	{
 		"text": "Level 43 (Wall)",
+		"level": "Master",
 		"game": "NkBBQkJfLi46QS4uQ0REOkVYWEMuLi46RS5GR0dIOklJRi4uSDpKSktLS0g=",
 		"achievements": [
 
@@ -907,7 +945,16 @@
 	},
 	{
 		"text": "Level 44 (Walls)",
-		"game": "NkBBQS5CQ186REREQkMuOkVYWEYuLi46RS5HRkhIOi4uR0lJSjouS0suX0o=",
+		"level": "Master",
+		"game": "NkBBQS5CQ186REREQkMuOkVYWEYuLjpFLkdGSEg6Li5HSUlKOi5LSy5fSjo=",
+		"achievements": [
+
+		]
+	},
+	{
+		"text": "Test level",
+		"level": "Test",
+		"game": "NkAuQUEuLi46Li4uLi4uOi4uLi4uLi46Li5CLi4uOi4uQkMuLjouLkJDLi4=",
 		"achievements": [
 
 		]

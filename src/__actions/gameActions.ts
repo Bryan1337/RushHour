@@ -1,27 +1,30 @@
-import { AppCarOrientations, CreateGameProperties, GameObjectTypes, GameTileCoordinate, GameTileMatrix, GameTileProperties, GameVehicle, MoveTurn } from 'Types/gameTypes';
+import { AppCarOrientations, CreateGameProperties, GameObjectTypes, GameTileCoordinate, MoveTurn } from 'Types/gameTypes';
 import { LevelData } from './../components/app/level_selection/LevelSelection';
-
+import { GameObject } from './../__types/gameTypes';
 
 export const setPlacementType = (placementType: GameObjectTypes) => ({
 	type: 'SET_PLACEMENT_TYPE',
 	placementType,
 })
 
-export const setGridTiles = (grid: GameTileMatrix<GameTileProperties>) => ({
-	type: 'SET_GRID_TILES',
-	grid,
+export const selectObject = (gameObject: GameObject) => ({
+	type: 'SELECT_OBJECT',
+	gameObject
 })
 
-export const setSelectedVehicle = (vehicle: GameVehicle) => ({
-	type: 'SET_SELECTED_VEHICLE',
-	vehicle
+export const moveObject = (moveTurn: MoveTurn) => ({
+	type: 'MOVE_OBJECT',
+	moveTurn,
 })
 
-export const moveVehicle = (vehicle: GameVehicle, newXPosition: number, newYPosition: number) => ({
-	type: 'MOVE_VEHICLE',
-	vehicle,
-	newXPosition,
-	newYPosition,
+export const undoMoveObject = (moveTurn: MoveTurn) => ({
+	type: 'UNDO_MOVE_OBJECT',
+	moveTurn,
+})
+
+export const redoMoveObject = (moveTurn: MoveTurn) => ({
+	type: 'REDO_MOVE_OBJECT',
+	moveTurn,
 })
 
 export const createGame = (game: CreateGameProperties) => ({
@@ -34,26 +37,12 @@ export const createGameProperties = (levelData: LevelData) => ({
 	levelData,
 })
 
-export const addWall = (tile: GameTileCoordinate) => ({
-	type: 'ADD_WALL',
-	tile,
+export const addObject = (gameObject: GameObject) => ({
+	type: 'ADD_OBJECT',
+	gameObject,
 })
 
-export const addVehicle = (vehicle: GameVehicle, tile: GameTileCoordinate) => ({
-	type: 'ADD_VEHICLE',
-	vehicle,
-	tile,
-})
-
-export const undoLastMove = () => ({
-	type: 'UNDO_VEHICLE_MOVE',
-})
-
-export const redoLastMove = () => ({
-	type: 'REDO_VEHICLE_MOVE',
-})
-
-export const setSelectedTile = (tile: GameTileProperties) => ({
+export const setSelectedTile = (tile: GameTileCoordinate) => ({
 	type: 'SET_SELECTED_TILE',
 	tile,
 })
@@ -68,17 +57,17 @@ export const setPlacementDirection = (direction: AppCarOrientations) => ({
 	direction
 })
 
-export const removeWall = (tile: GameTileCoordinate) => ({
-	type: 'REMOVE_WALL',
-	tile,
-})
-
-export const removeVehicle = (tile: GameTileCoordinate) => ({
-	type: 'REMOVE_VEHICLE',
+export const removeObject = (tile: GameTileCoordinate) => ({
+	type: 'REMOVE_OBJECT',
 	tile,
 })
 
 export const setTurnQueue = (queue: Array<MoveTurn>) => ({
 	type: 'SET_TURN_QUEUE',
 	queue,
+})
+
+export const setGridSize = (size: number) => ({
+	type: 'SET_GRID_SIZE',
+	size,
 })
