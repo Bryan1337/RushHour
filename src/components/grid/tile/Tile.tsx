@@ -17,9 +17,10 @@ interface TileProperties {
 
 const Tile = ({ tileProperties }: TileProperties) => {
 
-	// Move this hook out of here, it's heavy
 	const {
 		gridSize,
+		gameObjects,
+		selectedObject,
 	}: GameState = useSelector((state: RootStateOrAny) => state.gameReducer);
 
 	const {
@@ -31,13 +32,25 @@ const Tile = ({ tileProperties }: TileProperties) => {
 		isBlockedCarTile,
 	} = usePlacement();
 
-	const gameObject = getGameObject(tileProperties);
-
-	const isVehicleAccessible = isAccessibleCarTile(tileProperties);
-
-	const isBlocked = isBlockedCarTile(tileProperties);
-
 	const classes = useStyles();
+
+	const gameObject = useMemo(() => {
+
+		return getGameObject(tileProperties);
+
+	}, [ gameObjects ])
+
+	const isBlocked = useMemo(() => {
+
+		return isBlockedCarTile(tileProperties);
+
+	}, [ selectedObject ])
+
+	const isVehicleAccessible = useMemo(() => {
+
+		return isAccessibleCarTile(tileProperties);
+
+	}, [ selectedObject ])
 
 	const isWinTile = useMemo(() => {
 
@@ -46,7 +59,7 @@ const Tile = ({ tileProperties }: TileProperties) => {
 			tileProperties.yPosition === getExitYPosition(gridSize)
 		);
 
-	}, [ tileProperties ])
+	}, [ tileProperties, gridSize ])
 
 	return (
 		<Box

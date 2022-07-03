@@ -325,19 +325,20 @@ export const gameReducer = (state: GameState = initialAppState, action: AnyActio
 			const { gridSize, placementLength, placementDirection } = state;
 
 			const newSelectedTile = {
-				...tile,
+				xPosition: Math.min(gridSize - 1, Math.max(0, tile.xPosition)),
+				yPosition: Math.min(gridSize - 1, Math.max(0, tile.yPosition)),
 			}
 
 			const dimension = getDimension(placementDirection);
 
-			let maxDimensionPosition = Math.min(tile[dimension], gridSize - 1);
+			let limitedDimensionPosition = Math.max(0, Math.min(tile[dimension], gridSize - 1));
 
-			if (maxDimensionPosition + placementLength > gridSize) {
+			if (limitedDimensionPosition + placementLength > gridSize) {
 
-				maxDimensionPosition = gridSize - placementLength;
+				limitedDimensionPosition = gridSize - placementLength;
 			}
 
-			newSelectedTile[dimension] = maxDimensionPosition;
+			newSelectedTile[dimension] = limitedDimensionPosition;
 
 			return {
 				...state,

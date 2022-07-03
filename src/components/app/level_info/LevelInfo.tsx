@@ -18,8 +18,8 @@ const LevelInfo = () => {
 
 	return (
 		<Paper>
-			<Box p={3}>
-				<Typography variant="h4">
+			<Box p={3} >
+				<Typography variant="h5">
 					{level} {text}
 				</Typography>
 				{!isEmpty(achievements) && <>

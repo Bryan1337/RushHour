@@ -96,8 +96,9 @@ export default class Solver {
 
 		if (!node) {
 
-			console.log("No node?")
-			return
+			console.log("No node?");
+
+			return;
 		}
 
 		for (let yIndex = 0; yIndex < this.gridSize; yIndex++) {
@@ -156,8 +157,6 @@ export default class Solver {
 		}
 	}
 
-
-
 	// clone a node and link it to its parentNode
 	private cloneNode = (node: TraversalNode): TraversalNode => {
 
@@ -208,9 +207,9 @@ export default class Solver {
 		// iterate over cells
 		// for (let yIndex = 0; yIndex < this.gridSize; yIndex++) {
 
-			for (let xIndex = 0; xIndex < this.gridSize; xIndex++) {
+		for (let xIndex = 0; xIndex < this.gridSize; xIndex++) {
 
-				for (let yIndex = 0; yIndex < this.gridSize; yIndex++) {
+			for (let yIndex = 0; yIndex < this.gridSize; yIndex++) {
 
 				let found = false;
 
@@ -286,7 +285,7 @@ export default class Solver {
 	}
 
 	/*
-		We're not limited to moving less than 1 tile per turn.
+		We're not limited to moving 1 tile per turn.
 		By simply remove turns from tiles in between
 		For example: A -> B, B -> C, C -> D, could by simplified as A -> D
 	*/
@@ -294,23 +293,72 @@ export default class Solver {
 
 		const optimizedTurns: Array<MoveTurn> = [];
 
-		turns.forEach((turn, index) => {
+		turns = [ ...turns].reverse();
 
-			const previousTurn = turns[index - 1];
+		let keyTracker : string|null = null;
 
-			// find series of turns with same keys, only keep first and last
+		const turnIndexList = {};
 
-			if(!Boolean(index) || turn.gameObject.key !== previousTurn.gameObject.key) {
+		turns.forEach((turn) => {
 
-				optimizedTurns.push(turn);
+			const turnIndexKeys = Object.keys(turnIndexList);
+
+			if(!keyTracker) {
+
+				keyTracker = turn.gameObject.key;
+
+				turnIndexList[turnIndexKeys.length] = [
+					turn
+				];
+
+				return;
+			}
+
+			if(keyTracker === turn.gameObject.key) {
+
+				turnIndexList[turnIndexKeys.length] = [
+					...turnIndexList[turnIndexKeys.length] || [],
+					turn
+				];
+			}
+
+			if(keyTracker !== turn.gameObject.key) {
+
+				turnIndexList[turnIndexKeys.length + 1] = [
+					turn
+				];
+
+				keyTracker = turn.gameObject.key;
 			}
 		})
 
-		console.log({
-			optimizedTurns
+		Object.keys(turnIndexList).forEach((turnIndex) => {
+
+			const turnList = turnIndexList[turnIndex];
+
+			if(turnList.length === 1) {
+
+				const [ turn ] = turnList;
+
+				optimizedTurns.push(turn);
+
+				return;
+			}
+
+			const [ firstTurn ] = turnList;
+
+			const lastTurn = turnList[turnList.length - 1];
+
+			optimizedTurns.push({
+				fromX: firstTurn.fromX,
+				fromY: firstTurn.fromY,
+				toX: lastTurn.toX,
+				toY: lastTurn.toY,
+				gameObject: firstTurn.gameObject,
+			})
 		})
 
-		return optimizedTurns.reverse();
+		return optimizedTurns;
 	}
 
 	public solve = () => {
@@ -338,8 +386,8 @@ export default class Solver {
 
 				const turns = this.getTurnsFromNode(currentNode);
 
-				this.optimizeTurns(turns);
-				this.winningTurns = turns.reverse();
+				this.winningTurns = this.optimizeTurns(turns);
+				// this.winningTurns = turns.reverse();
 
 				this.printWinningSequence(currentNode)
 

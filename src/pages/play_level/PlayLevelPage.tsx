@@ -6,8 +6,10 @@ import React from 'react';
 
 const PlayLevelPage = () => {
 	return (
-		<Box display="flex">
-			<LevelInfo />
+		<Box display="flex" justifyContent="center">
+			<Box mr={2}>
+				<LevelInfo />
+			</Box>
 			<GameGrid />
 			<GameStatistics />
 		</Box>

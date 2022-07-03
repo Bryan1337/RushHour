@@ -1,3 +1,7 @@
+import ExtensionIcon from '@mui/icons-material/Extension';
+import RedoIcon from '@mui/icons-material/Redo';
+import ReplayIcon from '@mui/icons-material/Replay';
+import UndoIcon from '@mui/icons-material/Undo';
 import { Button, CircularProgress, Grid, Paper, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { useAppTiles } from 'Hooks/useAppTiles';
@@ -5,6 +9,9 @@ import { useSolverWorker } from 'Hooks/useSolverWorker';
 import React, { useEffect, useState } from 'react';
 import { RootStateOrAny, useSelector } from 'react-redux';
 import { CreateGameProperties, GameState, MoveTurn } from 'Types/gameTypes';
+import RedoQueue from './redo_queue/RedoQueue';
+import TurnQueue from './turn_queue/TurnQueue';
+import UndoQueue from './undo_queue/UndoQueue';
 
 const GameStatistics = () => {
 
@@ -98,7 +105,9 @@ const GameStatistics = () => {
 
 	}, [ undoQueue.length, isResetting ])
 
-	const disableSolveButton = Boolean(turnQueue.length || isSolving);
+	const disableButtons = (isResetting || isSolving);
+
+	const disableSolveButton = Boolean(turnQueue.length || disableButtons);
 
 	const disableUndoButton = Boolean(!undoQueue.length || disableSolveButton);
 
@@ -117,6 +126,7 @@ const GameStatistics = () => {
 						</Typography>
 						<Box mt={2}>
 							<Button
+								startIcon={!disableSolveButton && <ExtensionIcon />}
 								fullWidth
 								disabled={disableSolveButton}
 								onClick={() => clickedSolveGame()}
@@ -127,6 +137,7 @@ const GameStatistics = () => {
 						</Box>
 						<Box mt={2}>
 							<Button
+								startIcon={<ReplayIcon />}
 								fullWidth
 								disabled={disableUndoButton}
 								variant="contained"
@@ -137,6 +148,10 @@ const GameStatistics = () => {
 						<Box display="flex" mt={2}>
 							<Box mr={2} mb={2} width="100%">
 								<Button
+									style={{
+										minWidth: "max-content",
+									}}
+									startIcon={<UndoIcon />}
 									fullWidth
 									disabled={disableUndoButton}
 									onClick={() => undoLastMove()}
@@ -146,6 +161,10 @@ const GameStatistics = () => {
 							</Box>
 							<Box mb={2} width="100%">
 								<Button
+									style={{
+										minWidth: "max-content",
+									}}
+									startIcon={<RedoIcon />}
 									fullWidth
 									disabled={disableRedoButton}
 									onClick={() => redoLastMove()}
@@ -155,9 +174,9 @@ const GameStatistics = () => {
 							</Box>
 						</Box>
 						<Grid mt={2}>
-							{/* <TurnQueue /> */}
-							{/* <UndoQueue /> */}
-							{/* <RedoQueue /> */}
+							<TurnQueue />
+							<UndoQueue />
+							<RedoQueue />
 						</Grid>
 					</Box>
 				</Paper>

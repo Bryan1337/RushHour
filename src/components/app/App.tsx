@@ -1,32 +1,34 @@
-import { Box } from '@mui/system';
+import { Grid } from '@mui/material';
 import 'Components/app/App.css';
 import React from 'react';
-import { RootStateOrAny, useSelector } from 'react-redux';
-import { CreateState } from 'Types/createTypes';
+import { BrowserRouter } from 'react-router-dom';
+import Navigation from '../../pages/navigation/Navigation';
 import MainRoutes from '../../routes/MainRoutes';
 
 const App = () => {
 
-	const {
-		creatorModeEnabled,
-	}: CreateState = useSelector((state: RootStateOrAny) => state.createReducer);
-
 	return (
-		<Box
-			p={2}
-			display="flex"
-			justifyContent="center"
-			alignItems="center"
-			flexDirection="row"
-			height="100%">
-			<MainRoutes />
-			<Box
+		<BrowserRouter>
+			<Grid
+				container
 				display="flex"
-				flexDirection="row">
-				{/* <GameStatistics /> */}
-				{/* <LevelInfo /> */}
-			</Box>
-		</Box>
+				flexDirection="column"
+				height="100%">
+				<Grid
+					display="flex"
+					flexDirection="column"
+					alignItems="center"
+					justifyContent="center"
+					item
+					xs>
+					<MainRoutes />
+				</Grid>
+				<Grid item>
+					<Navigation />
+				</Grid>
+			</Grid>
+		</BrowserRouter>
+
 	)
 }
 

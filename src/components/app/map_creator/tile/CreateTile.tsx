@@ -2,8 +2,9 @@ import GameObjectTile from 'Components/grid/tile/object/GameObjectTile';
 import { useAppTiles } from 'Hooks/useAppTiles';
 import { useGameObject } from 'Hooks/useGameObject';
 import { usePlacement } from 'Hooks/usePlacement';
-import React from 'react';
-import { GameTileCoordinate } from 'Types/gameTypes';
+import React, { useMemo } from 'react';
+import { RootStateOrAny, useSelector } from 'react-redux';
+import { GameState, GameTileCoordinate } from 'Types/gameTypes';
 import useStyles from './Styles';
 
 interface CreateTileTileProperties {
@@ -11,6 +12,10 @@ interface CreateTileTileProperties {
 }
 
 const CreateTile = ({ tileProperties }: CreateTileTileProperties) => {
+
+	const {
+		selectedTile,
+	}: GameState = useSelector((state: RootStateOrAny) => state.gameReducer);
 
 	const {
 		setSelectedTile,
@@ -28,11 +33,23 @@ const CreateTile = ({ tileProperties }: CreateTileTileProperties) => {
 
 	const gameObject = getGameObject(tileProperties);
 
-	const isSelected = isSelectedTile(tileProperties);
+	const isSelected = useMemo(() => {
 
-	const isAdjacentSelected = isAdjacentSelectedTile(tileProperties);
+		return isSelectedTile(tileProperties);
 
-	const isBlocked = isBlockedPlacementTile(tileProperties);
+	}, [selectedTile, gameObject])
+
+	const isAdjacentSelected = useMemo(() => {
+
+		return isAdjacentSelectedTile(tileProperties);
+
+	}, [selectedTile, gameObject])
+
+	const isBlocked = useMemo(() => {
+
+		return isBlockedPlacementTile(tileProperties);
+
+	}, [selectedTile, gameObject])
 
 	const tileColor = () => {
 
@@ -63,6 +80,7 @@ const CreateTile = ({ tileProperties }: CreateTileTileProperties) => {
 				onClick={() => setSelectedTile(tileProperties)}
 				className={classes.createTileContainer}>
 				<span className={classes.createTileBorder} />
+				{(isSelected || isAdjacentSelected) && !isBlocked && "🚓"}
 				{gameObject && <GameObjectTile object={gameObject} />}
 			</div>
 		</>

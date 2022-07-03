@@ -62,17 +62,26 @@ const LevelSelection = () => {
 
 	const solveAll = async() => {
 
+		const turnSolveCounter = {}
+
 		levelData.forEach(async (levelData: LevelData) => {
 
 			const game = importString(levelData.game) as CreateGameProperties;
 
 			const turns = await solveGame(game);
 
-			console.log(`Level ${levelData.level} solved in ${turns.length} turns`);
+			// console.log(`Level ${levelData.level} solved in ${turns.length} turns`);
 
-			// console.log({
-			// 	turns
-			// })
+			turnSolveCounter[levelData.text] = {
+				platinum: turns.length,
+				gold: turns.length + 5,
+				silver: turns.length + 12,
+				bronze: turns.length + 25,
+			}
+		})
+
+		console.log({
+			turnSolveCounter
 		})
 	}
 

@@ -11,13 +11,12 @@ import { useGameObject } from 'Hooks/useGameObject';
 import { usePlacement } from 'Hooks/usePlacement';
 import React, { useEffect } from 'react';
 import { RootStateOrAny, useSelector } from 'react-redux';
-import { AppCarOrientations, CreateGameProperties, GameObjectSizes, GameObjectTypes, GameState } from 'Types/gameTypes';
+import { AppCarOrientations, CreateGameProperties, GameObjectSizes, GameObjectTypes, GameState, GameTileCoordinate } from 'Types/gameTypes';
 
 const MapCreator = () => {
 
 	const {
 		gridSize,
-		gameTiles,
 		gameObjects,
 		selectedTile,
 		placementLength,
@@ -36,6 +35,7 @@ const MapCreator = () => {
 		setPlacementLength,
 		createGame,
 		setGridSize,
+		setSelectedTile,
 	} = useAppTiles();
 
 	const {
@@ -91,14 +91,73 @@ const MapCreator = () => {
 
 	const hasSelectedObject = selectedTile && getGameObject(selectedTile!);
 
+	enum KeyboardArrowKeys {
+		ArrowDown = 'ArrowDown',
+		ArrowUp = 'ArrowUp',
+		ArrowLeft = 'ArrowLeft',
+		ArrowRight = 'ArrowRight',
+	}
+
+	const handleKeyboardMove = (e: KeyboardEvent) => {
+
+		console.log({
+			e
+		})
+
+		if(!selectedTile)
+		{
+			return;
+		}
+
+		const { xPosition, yPosition } = selectedTile as GameTileCoordinate;
+
+		console.log(e)
+		switch(e.key) {
+			case KeyboardArrowKeys.ArrowUp:
+				setSelectedTile({
+					xPosition,
+					yPosition: yPosition - 1,
+				});
+				break;
+			case KeyboardArrowKeys.ArrowDown:
+				setSelectedTile({
+					xPosition,
+					yPosition: yPosition + 1,
+				});
+				break;
+			case KeyboardArrowKeys.ArrowLeft:
+				setSelectedTile({
+					xPosition: xPosition - 1,
+					yPosition,
+				});
+				break;
+			case KeyboardArrowKeys.ArrowRight:
+				setSelectedTile({
+					xPosition: xPosition + 1,
+					yPosition,
+				});
+				break;
+		}
+	}
+
+	useEffect(() => {
+
+		window.addEventListener("keydown", handleKeyboardMove);
+
+		return () => {
+
+			window.removeEventListener("keydown", handleKeyboardMove);
+		}
+
+	}, [ selectedTile ])
+
+
 	return (
-		<Box
-			height="auto"
-			m={.5}>
+		<Box pr={3}>
 			<Paper>
 				<Box p={3}>
 					<Typography
-						variant="h4"
+						variant="h5"
 						pb={2}>
 						Editor
 					</Typography>

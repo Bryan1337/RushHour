@@ -12,7 +12,7 @@ export const useSolverWorker = () => {
 
 		return new Promise((resolve, reject) => {
 
-			const timeoutMs = 15000;
+			const timeoutMs = 1500000;
 
 			const startTime = new Date();
 

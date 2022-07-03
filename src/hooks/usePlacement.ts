@@ -59,8 +59,13 @@ export const usePlacement = () => {
 
 		const { xPosition, yPosition } = tileProperties;
 
+		if(!selectedTile) {
+
+			return false;
+		}
+
 		return (
-			selectedTile?.xPosition === xPosition &&
+			selectedTile.xPosition === xPosition &&
 			selectedTile.yPosition === yPosition
 		);
 	}

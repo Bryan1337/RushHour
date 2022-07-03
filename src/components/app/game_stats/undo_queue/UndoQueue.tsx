@@ -1,4 +1,6 @@
-import { Typography } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Accordion, AccordionDetails, AccordionSummary, Typography } from '@mui/material';
+import { Box } from '@mui/system';
 import React, { Fragment } from 'react';
 import { RootStateOrAny, useSelector } from 'react-redux';
 import { GameState, MoveTurn } from 'Types/gameTypes';
@@ -14,16 +16,27 @@ const UndoQueue = () => {
 	} = gameState;
 
 	return (
-		<>
-			<Typography>
-				Recent Moves ({undoQueue.length})
-			</Typography>
-			{undoQueue.map((moveTurn: MoveTurn, index) => (
-				<Fragment key={index}>
-					<MoveItem moveTurn={moveTurn} />
-				</Fragment>
-			))}
-		</>
+		<Accordion TransitionProps={{ unmountOnExit: true }}>
+			<AccordionSummary expandIcon={<ExpandMoreIcon />}>
+				<Typography>
+					Recent Moves ({undoQueue.length})
+				</Typography>
+			</AccordionSummary>
+			<AccordionDetails>
+				{undoQueue.map((moveTurn: MoveTurn, index) => (
+					<Fragment key={index}>
+						<MoveItem moveTurn={moveTurn} />
+					</Fragment>
+				))}
+				{!undoQueue.length && (
+					<Box display="flex" justifyContent="center">
+						<Typography variant="caption">
+							No recent moves
+						</Typography>
+					</Box>
+				)}
+			</AccordionDetails>
+		</Accordion>
 	)
 }
 
