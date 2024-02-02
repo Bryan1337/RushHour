@@ -1,14 +1,13 @@
-import { Box } from '@mui/material';
+import { Box, Grow } from '@mui/material';
 import { useGameObject } from 'Hooks/useGameObject';
 import { usePlacement } from 'Hooks/usePlacement';
+import { getExitYPosition } from 'Scripts/coordinateHelper';
+import { AppCarOrientations, GameObject, GameState, GameTileCoordinate } from 'Types/gameTypes';
 import React, { useMemo } from 'react';
 import { RootStateOrAny, useSelector } from 'react-redux';
-import { getExitYPosition } from 'Scripts/coordinateHelper';
-import { GameState, GameTileCoordinate } from 'Types/gameTypes';
-import AccessibleTile from './accessible/AccessibleTile';
-import BlockedTile from './blocked/BlockedTile';
-import GameObjectTile from './object/GameObjectTile';
 import useStyles from './Styles';
+import AccessibleTile from './accessible/AccessibleTile';
+import GameObjectTile from './object/GameObjectTile';
 import WinTile from './win/WinTile';
 
 interface TileProperties {
@@ -17,11 +16,11 @@ interface TileProperties {
 
 const Tile = ({ tileProperties }: TileProperties) => {
 
-	const {
-		gridSize,
-		gameObjects,
-		selectedObject,
-	}: GameState = useSelector((state: RootStateOrAny) => state.gameReducer);
+	const gridSize = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).gridSize);
+
+	const gameObjects = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).gameObjects);
+
+	const selectedObject = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).selectedObject);
 
 	const {
 		getGameObject,
@@ -36,21 +35,35 @@ const Tile = ({ tileProperties }: TileProperties) => {
 
 	const gameObject = useMemo(() => {
 
-		return getGameObject(tileProperties);
+		const gameObject = getGameObject(tileProperties);
+
+		return (
+			gameObject &&
+			gameObject.xPosition === tileProperties.xPosition &&
+			gameObject.yPosition === tileProperties.yPosition
+		) ? gameObject : null;
 
 	}, [ gameObjects ])
 
 	const isBlocked = useMemo(() => {
 
-		return isBlockedCarTile(tileProperties);
+		return isBlockedCarTile(selectedObject, tileProperties);
 
-	}, [ selectedObject ])
+	}, [
+		Boolean(selectedObject),
+		selectedObject?.orientation === AppCarOrientations.Horizontal && selectedObject?.yPosition !== tileProperties.yPosition,
+		selectedObject?.orientation === AppCarOrientations.Vertical && selectedObject?.xPosition !== tileProperties.xPosition,
+	])
 
 	const isVehicleAccessible = useMemo(() => {
 
-		return isAccessibleCarTile(tileProperties);
+		return isAccessibleCarTile(selectedObject as GameObject, tileProperties);
 
-	}, [ selectedObject ])
+	}, [
+		Boolean(selectedObject),
+		selectedObject?.orientation === AppCarOrientations.Horizontal && selectedObject?.yPosition !== tileProperties.yPosition,
+		selectedObject?.orientation === AppCarOrientations.Vertical && selectedObject?.xPosition !== tileProperties.xPosition,
+	 ])
 
 	const isWinTile = useMemo(() => {
 
@@ -68,8 +81,13 @@ const Tile = ({ tileProperties }: TileProperties) => {
 			{!gameObject && <>
 				{isWinTile && <WinTile tileProperties={tileProperties} />}
 				{!isWinTile && isVehicleAccessible && <>
-					{isBlocked && <BlockedTile />}
-					{!isBlocked && <AccessibleTile tileProperties={tileProperties} />}
+					{/* {isBlocked && <BlockedTile />} */}
+					<Grow in={!isBlocked}>
+						<Box>
+							<AccessibleTile tileProperties={tileProperties} />
+						</Box>
+					</Grow>
+					{/* {!isBlocked && <AccessibleTile tileProperties={tileProperties} />} */}
 				</>}
 			</>}
 		</Box>

@@ -11,12 +11,13 @@ export const useGameObject = () => {
 		removeObject,
 	} = useAppTiles();
 
-	const {
-		gameObjects,
-		placementType,
-		placementDirection,
-		placementLength,
-	}: GameState = useSelector((state: RootStateOrAny) => state.gameReducer);
+	const gameObjects = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).gameObjects);
+
+	const placementType = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).placementType);
+
+	const placementDirection = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).placementDirection);
+
+	const placementLength = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).placementLength);
 
 	/**
 	 * O(n)

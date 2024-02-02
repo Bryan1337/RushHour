@@ -1,6 +1,6 @@
-import { RootStateOrAny, useSelector } from 'react-redux';
 import { getExitYPosition } from 'Scripts/coordinateHelper';
 import { AppCarOrientations, GameObject, GameObjectTypes, GameState, GameTileCoordinate } from 'Types/gameTypes';
+import { RootStateOrAny, useSelector } from 'react-redux';
 import { getCoordinateTileKey } from './../scripts/coordinateHelper';
 import { useGameObject } from './useGameObject';
 
@@ -10,15 +10,19 @@ export const usePlacement = () => {
 		getGameObject,
 	} = useGameObject();
 
-	const {
-		placementType,
-		placementLength,
-		placementDirection,
-		selectedTile,
-		gridSize,
-		gameTiles,
-		selectedObject,
-	}: GameState = useSelector((state: RootStateOrAny) => state.gameReducer);
+	const placementType = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).placementType);
+
+	const placementLength = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).placementLength);
+
+	const placementDirection = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).placementDirection);
+
+	const selectedTile = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).selectedTile);
+
+	const gridSize = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).gridSize);
+
+	const gameTiles = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).gameTiles);
+
+	const selectedObject = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).selectedObject);
 
 	/**
 	 * O(1)
@@ -27,23 +31,27 @@ export const usePlacement = () => {
 	 *
 	 * @returns boolean
 	 */
-	const isAccessibleCarTile = (tileProperties: GameTileCoordinate) : boolean => {
+	const isAccessibleCarTile = (selected: GameObject, tileProperties: GameTileCoordinate) : boolean => {
 
 		const { xPosition, yPosition } = tileProperties;
 
-		if (!selectedObject) {
+		if (!selected) {
 
 			return false;
 		}
 
-		if (selectedObject.orientation === AppCarOrientations.Horizontal) {
+		if (selected.orientation === AppCarOrientations.Horizontal) {
 
-			return yPosition === selectedObject.yPosition;
+			return (
+				yPosition === selected.yPosition
+			);
 		}
 
-		if (selectedObject.orientation === AppCarOrientations.Vertical) {
+		if (selected.orientation === AppCarOrientations.Vertical) {
 
-			return xPosition === selectedObject.xPosition;
+			return (
+				xPosition === selected.xPosition
+			);
 		}
 
 		return false;
@@ -121,18 +129,26 @@ export const usePlacement = () => {
 	 * @param tileProperties
 	 * @returns boolean
 	 */
-	const isBlockedCarTile = (tileProperties: GameTileCoordinate) : boolean => {
+	const isBlockedCarTile = (selected, tileProperties: GameTileCoordinate) : boolean => {
 
 		const { xPosition, yPosition } = tileProperties;
 
-		if (!isAccessibleCarTile(tileProperties)) {
+		if (!isAccessibleCarTile(selected, tileProperties)) {
 
 			return false;
 		}
 
-		const selection = selectedObject as GameObject;
+		const selection = selected as GameObject;
 
 		if (selection.orientation === AppCarOrientations.Horizontal) {
+
+			for (let xIndex = selection.xPosition + 1; xIndex < selection.xPosition + selection.size; xIndex++) {
+
+				if(tileProperties.xPosition === xIndex) {
+
+					return true;
+				}
+			}
 
 			for (let xIndex = selection.xPosition + 1; xIndex < gridSize; xIndex++) {
 
@@ -180,6 +196,14 @@ export const usePlacement = () => {
 		}
 
 		if (selection.orientation === AppCarOrientations.Vertical) {
+
+			for (let yIndex = selection.yPosition + 1; yIndex < selection.yPosition + selection.size; yIndex++) {
+
+				if (tileProperties.yPosition === yIndex) {
+
+					return true;
+				}
+			}
 
 			for (let yIndex = selection.yPosition + 1; yIndex < gridSize; yIndex++) {
 

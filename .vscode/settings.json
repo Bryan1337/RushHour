@@ -8,7 +8,7 @@
         "editor.showUnused": true
     },
     "editor.codeActionsOnSave": {
-        "source.organizeImports": true
+        "source.organizeImports": "explicit"
     },
     "search.exclude": {
         "**/node_modules": true,

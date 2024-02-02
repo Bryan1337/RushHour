@@ -1,5 +1,4 @@
 const commonWebpackConfig = require('./webpack.common.js');
-const { ESBuildMinifyPlugin } = require('esbuild-loader');
 const path = require('path');
 
 module.exports = {
@@ -18,23 +17,5 @@ module.exports = {
         assetsSort: "!size",
         errors: true,
         builtAt: false,
-    },
-    optimization: {
-        runtimeChunk: 'single',
-        minimizer: [
-            new ESBuildMinifyPlugin({
-                target: 'es2015',
-                css: true,
-            })
-        ],
-        splitChunks: {
-            cacheGroups: {
-                vendor: {
-                    test: /[\\/]node_modules[\\/]/,
-                    name: 'vendor',
-                    chunks: 'all',
-                }
-            }
-        }
     },
 };

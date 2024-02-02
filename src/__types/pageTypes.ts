@@ -1,9 +1,9 @@
 
 export enum Pages {
-	Index = '/',
-	LevelSelection = '/levels',
+	LevelSelection = '/',
 	Editor = '/editor',
-	PlayLevel = '/play/:levelId'
+	PlayLevel = '/play/:levelId',
+	Test = '/test'
 }
 
 export enum PageParams {

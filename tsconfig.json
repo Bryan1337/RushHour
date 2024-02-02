@@ -12,6 +12,7 @@
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
 		"lib": [
+			"dom",
 			"webworker",
 			"es5",
 			"scripthost"
@@ -21,7 +22,6 @@
 		"moduleResolution": "node",
 		"noImplicitAny": true,
 		"removeComments": true,
-		"suppressImplicitAnyIndexErrors": true,
 		"paths": {
 			"Components/*": [
 				"components/*"

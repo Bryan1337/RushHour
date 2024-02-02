@@ -4,7 +4,7 @@ import Worker from 'Workers/solver.worker';
 
 export const useSolverWorker = () => {
 
-	const [ isSolving, setIsSolving ] = useState<Boolean>(false);
+	const [ isSolving, setIsSolving ] = useState<boolean>(false);
 
 	const solveGame = (game: CreateGameProperties) : Promise<Array<MoveTurn>> => {
 

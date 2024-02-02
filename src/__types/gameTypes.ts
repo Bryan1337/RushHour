@@ -8,7 +8,7 @@ export enum GameObjectSizes {
 
 export enum GameObjectTypes {
 	Player,
-	Default,
+	Vehicle,
 	Wall,
 }
 export interface GameVehicle extends GameObject {
@@ -19,6 +19,10 @@ export interface GameVehicle extends GameObject {
 export enum TileDimensions {
 	x = 'xPosition',
 	y ='yPosition',
+}
+
+export interface GameTile extends GameTileCoordinate {
+	vehicleKey?: string;
 }
 
 export interface GameTileCoordinate {
@@ -157,9 +161,7 @@ export enum AppTileIndices {
 
 export interface GameState {
 	gridSize: number;
-	gameTiles: {
-		[tileKey: string]: GameTileCoordinate;
-	};
+	gameTiles: Record<string, GameTile>;
 	selectedObject: GameObject | null;
 	selectedTile: GameTileCoordinate | null;
 	placementDirection: AppCarOrientations;

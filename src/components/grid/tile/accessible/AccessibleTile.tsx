@@ -1,9 +1,14 @@
+import KeyboardDoubleArrowDownRoundedIcon from '@mui/icons-material/KeyboardDoubleArrowDownRounded';
+import KeyboardDoubleArrowLeftRoundedIcon from '@mui/icons-material/KeyboardDoubleArrowLeftRounded';
+import KeyboardDoubleArrowRightRoundedIcon from '@mui/icons-material/KeyboardDoubleArrowRightRounded';
+import KeyboardDoubleArrowUpRoundedIcon from '@mui/icons-material/KeyboardDoubleArrowUpRounded';
 import { Box } from '@mui/system';
 import { useAppTiles } from 'Hooks/useAppTiles';
+import { AppCarOrientations, GameObject, GameState, GameTileCoordinate, MoveTurn } from 'Types/gameTypes';
 import React from 'react';
 import { RootStateOrAny, useSelector } from 'react-redux';
-import { GameObject, GameState, GameTileCoordinate, MoveTurn } from 'Types/gameTypes';
 import useStyles from './Styles';
+
 interface AccessibleTileProperties {
 	tileProperties: GameTileCoordinate;
 }
@@ -16,17 +21,18 @@ const AccessibleTile = ({
 
 	const {
 		moveObject,
+		selectObject
 	} = useAppTiles();
 
-	const {
-		selectedObject,
-	}: GameState = useSelector((state: RootStateOrAny) => state.gameReducer);
+	const selectedObject = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).selectedObject) as GameObject;
 
 	const classes = useStyles();
 
-	const moveToTile = () => {
+	const moveToTile = async () => {
 
 		if (Boolean(selectedObject)) {
+
+			selectObject(null);
 
 			let newXPosition = xPosition;
 
@@ -52,7 +58,7 @@ const AccessibleTile = ({
 				toY: newYPosition,
 			}
 
-			moveObject(moveTurn);
+			await moveObject(moveTurn);
 		}
 	}
 
@@ -60,7 +66,18 @@ const AccessibleTile = ({
 		<Box
 			className={classes.accessibleTile}
 			onClick={() => moveToTile()}>
-			✔️
+			{selectedObject.orientation === AppCarOrientations.Horizontal && (
+				<>
+					{(tileProperties.xPosition >= selectedObject?.xPosition) && <KeyboardDoubleArrowRightRoundedIcon className={classes.navIcon} />}
+					{(tileProperties.xPosition <= selectedObject?.xPosition) && <KeyboardDoubleArrowLeftRoundedIcon className={classes.navIcon} />}
+				</>
+			)}
+			{selectedObject.orientation === AppCarOrientations.Vertical && (
+				<>
+					{(tileProperties.yPosition >= selectedObject?.yPosition) && <KeyboardDoubleArrowDownRoundedIcon className={classes.navIcon} />}
+					{(tileProperties.yPosition <= selectedObject?.yPosition) && <KeyboardDoubleArrowUpRoundedIcon className={classes.navIcon} />}
+				</>
+			)}
 		</Box>
 	);
 };

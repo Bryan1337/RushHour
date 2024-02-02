@@ -2,37 +2,38 @@ import ExtensionIcon from '@mui/icons-material/Extension';
 import RedoIcon from '@mui/icons-material/Redo';
 import ReplayIcon from '@mui/icons-material/Replay';
 import UndoIcon from '@mui/icons-material/Undo';
-import { Button, CircularProgress, Grid, Paper, Typography } from '@mui/material';
+import { Button, CircularProgress, Paper } from '@mui/material';
 import { Box } from '@mui/system';
 import { useAppTiles } from 'Hooks/useAppTiles';
 import { useSolverWorker } from 'Hooks/useSolverWorker';
-import React, { useEffect, useState } from 'react';
-import { RootStateOrAny, useSelector } from 'react-redux';
 import { CreateGameProperties, GameState, MoveTurn } from 'Types/gameTypes';
-import RedoQueue from './redo_queue/RedoQueue';
-import TurnQueue from './turn_queue/TurnQueue';
-import UndoQueue from './undo_queue/UndoQueue';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
+import { RootStateOrAny, useSelector } from 'react-redux';
 
 const GameStatistics = () => {
 
-	const gameState: GameState = useSelector((state: RootStateOrAny) => state.gameReducer);
+	const gameObjects = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).gameObjects);
 
-	const [ isResetting, setIsResetting ] = useState(false);
+	const gridSize = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).gridSize);
+
+	const turnQueue = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).turnQueue);
+
+	const undoQueue = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).undoQueue);
+
+	const redoQueue = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).redoQueue);
+
+	const [isWorking, setIsWorking] = useState<boolean>(false);
+
+	const [isResetting, setIsResetting] = useState<boolean>(false);
+
 
 	const {
+		selectObject,
 		moveObject,
 		setTurnQueue,
 		undoLastMove,
 		redoLastMove,
 	} = useAppTiles();
-
-	const {
-		gameObjects,
-		gridSize,
-		turnQueue,
-		undoQueue,
-		redoQueue,
-	} = gameState;
 
 	const {
 		solveGame,
@@ -60,52 +61,83 @@ const GameStatistics = () => {
 		}
 	}
 
-	const handleTurn = () => {
+	const handleTurn = async () => {
 
-		const [ firstTurn ] = turnQueue;
+		const [firstTurn] = turnQueue;
 
 		const newTurns = [...turnQueue].filter((_, index) => index !== 0)
 
-		moveObject(firstTurn);
+		await moveObject(firstTurn);
 
 		setTurnQueue(newTurns);
 	}
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 
-		if(Boolean(turnQueue.length)) {
+		if (Boolean(turnQueue.length)) {
 
 			requestAnimationFrame(() => {
 
+				selectObject(null);
+
 				handleTurn();
 			})
-
 		}
 
-	}, [ turnQueue.length])
+	}, [turnQueue.length])
 
 	const resetGame = () => {
 
 		setIsResetting(true);
+
+		setIsWorking(true);
+	}
+
+	const handleUndoQueue = async () => {
+
+		if (isResetting) {
+
+			if (undoQueue.length) {
+
+				await undoLastMove();
+
+			} else {
+
+				setIsResetting(false);
+
+				setIsWorking(false);
+			}
+		}
+	}
+
+	const handleClickedUndo = async () => {
+
+		setIsWorking(true);
+
+		await undoLastMove();
+
+		setIsWorking(false);
+	}
+
+	const handleClickedRedo = async () => {
+
+		setIsWorking(true);
+
+		await redoLastMove();
+
+		setIsWorking(false);
 	}
 
 	useEffect(() => {
 
 		if(isResetting) {
 
-			if (undoQueue.length) {
-
-				undoLastMove();
-
-			} else {
-
-				setIsResetting(false);
-			}
+			handleUndoQueue();
 		}
 
-	}, [ undoQueue.length, isResetting ])
+	}, [undoQueue.length, isResetting ])
 
-	const disableButtons = (isResetting || isSolving);
+	const disableButtons = (isWorking || isSolving);
 
 	const disableSolveButton = Boolean(turnQueue.length || disableButtons);
 
@@ -113,26 +145,26 @@ const GameStatistics = () => {
 
 	const disableRedoButton = Boolean(!redoQueue.length || disableSolveButton);
 
+
 	return (
 		<Box minWidth={320}>
 			<Box height="auto" m={.5} overflow="scroll" maxHeight={500}>
 				<Paper>
 					<Box p={3}>
-						<Typography>
+						<p>
 							Turn counter
-						</Typography>
-						<Typography variant="h2">
+						</p>
+						<p>
 							{undoQueue.length}
-						</Typography>
+						</p>
 						<Box mt={2}>
 							<Button
-								startIcon={!disableSolveButton && <ExtensionIcon />}
+								startIcon={!disableSolveButton ? <ExtensionIcon /> : <CircularProgress size={16} />}
 								fullWidth
 								disabled={disableSolveButton}
 								onClick={() => clickedSolveGame()}
 								variant="contained">
-								{!disableSolveButton && "Solve"}
-								{disableSolveButton && <CircularProgress size={16} />}
+								Solve
 							</Button>
 						</Box>
 						<Box mt={2}>
@@ -154,7 +186,7 @@ const GameStatistics = () => {
 									startIcon={<UndoIcon />}
 									fullWidth
 									disabled={disableUndoButton}
-									onClick={() => undoLastMove()}
+									onClick={() => handleClickedUndo()}
 									variant="contained">
 									Undo ({undoQueue.length})
 								</Button>
@@ -167,17 +199,12 @@ const GameStatistics = () => {
 									startIcon={<RedoIcon />}
 									fullWidth
 									disabled={disableRedoButton}
-									onClick={() => redoLastMove()}
+									onClick={() => handleClickedRedo()}
 									variant="contained">
 									Redo ({redoQueue.length})
 								</Button>
 							</Box>
 						</Box>
-						<Grid mt={2}>
-							<TurnQueue />
-							<UndoQueue />
-							<RedoQueue />
-						</Grid>
 					</Box>
 				</Paper>
 			</Box>

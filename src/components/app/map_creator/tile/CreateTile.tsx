@@ -2,9 +2,9 @@ import GameObjectTile from 'Components/grid/tile/object/GameObjectTile';
 import { useAppTiles } from 'Hooks/useAppTiles';
 import { useGameObject } from 'Hooks/useGameObject';
 import { usePlacement } from 'Hooks/usePlacement';
+import { GameState, GameTileCoordinate } from 'Types/gameTypes';
 import React, { useMemo } from 'react';
 import { RootStateOrAny, useSelector } from 'react-redux';
-import { GameState, GameTileCoordinate } from 'Types/gameTypes';
 import useStyles from './Styles';
 
 interface CreateTileTileProperties {
@@ -13,9 +13,9 @@ interface CreateTileTileProperties {
 
 const CreateTile = ({ tileProperties }: CreateTileTileProperties) => {
 
-	const {
-		selectedTile,
-	}: GameState = useSelector((state: RootStateOrAny) => state.gameReducer);
+	const selectedTile = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).selectedTile);
+
+	const selectedObject = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).selectedObject);
 
 	const {
 		setSelectedTile,
@@ -31,7 +31,17 @@ const CreateTile = ({ tileProperties }: CreateTileTileProperties) => {
 		isBlockedPlacementTile,
 	} = usePlacement();
 
-	const gameObject = getGameObject(tileProperties);
+	const gameObject = useMemo(() => {
+
+		const retrievedGameObject = getGameObject(tileProperties);
+
+		return (
+			Boolean(retrievedGameObject) &&
+			retrievedGameObject?.xPosition === tileProperties.xPosition &&
+			retrievedGameObject?.yPosition === tileProperties.yPosition
+		) ? retrievedGameObject : null;
+
+	}, [tileProperties]);
 
 	const isSelected = useMemo(() => {
 

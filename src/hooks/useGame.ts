@@ -21,8 +21,31 @@ export const useGame = () => {
 			case GameObjectKeys.Wall:
 				return GameObjectTypes.Wall;
 			default:
-				return GameObjectTypes.Default;
+				return GameObjectTypes.Vehicle;
 		}
+	}
+
+	const levelIsAvailable = (level: number) => {
+
+		if(level === 0) {
+
+			return true;
+		}
+
+		const completedLevels = localStorage.getItem('completedLevels');
+
+		const levels = JSON.parse(completedLevels || '[]');
+
+		return levels.includes(level);
+	}
+
+	const hasCompletedLevel = (level: number) => {
+
+		const completedLevels = localStorage.getItem('completedLevels');
+
+		const levels = JSON.parse(completedLevels || '[]');
+
+		return Boolean(levels) && levels.includes(level + 1);
 	}
 
 	const importString = (text: string): CreateGameProperties | null => {
@@ -134,7 +157,7 @@ export const useGame = () => {
 
 					gameString += GameObjectKeys.Player;
 
-				} else if (gameObject.type === GameObjectTypes.Default) {
+				} else if (gameObject.type === GameObjectTypes.Vehicle) {
 
 					if (!uniqueEncounteredVehicleKeys.includes(gameObject.key)) {
 
@@ -157,5 +180,7 @@ export const useGame = () => {
 	return {
 		importString,
 		exportString,
+		hasCompletedLevel,
+		levelIsAvailable,
 	}
 }

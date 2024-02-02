@@ -3,17 +3,15 @@ import { LevelData } from 'Components/app/level_selection/LevelSelection';
 import CreateTile from 'Components/app/map_creator/tile/CreateTile';
 import { useAppTiles } from 'Hooks/useAppTiles';
 import { useGame } from 'Hooks/useGame';
+import { CreateGameProperties, GameState } from 'Types/gameTypes';
 import React, { Fragment, useEffect } from 'react';
 import { RootStateOrAny, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { CreateGameProperties, GameState } from 'Types/gameTypes';
 import levelList from '../../../levels/levels.json';
 
 const EditGameGrid = () => {
 
-	const {
-		gameTiles,
-	}: GameState = useSelector((state: RootStateOrAny) => state.gameReducer);
+	const gameTiles = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).gameTiles);
 
 	const {
 		levelId
@@ -32,18 +30,9 @@ const EditGameGrid = () => {
 
 		const level: LevelData = levelList[levelId];
 
-		console.log({
-			level,
-			levelList,
-		})
-
 		if (Boolean(level)) {
 
 			const game = importString(level.game);
-
-			console.log({
-				game
-			})
 
 			createGame(game as CreateGameProperties);
 

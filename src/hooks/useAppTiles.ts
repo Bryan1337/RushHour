@@ -1,15 +1,15 @@
 import * as gameActions from 'Actions/gameActions';
-import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
+import { OBJECT_ID_PREFIX } from 'Components/entities/vehicle/Vehicle';
 import { AppCarOrientations, CreateGameProperties, GameObjectTypes, GameState, GameTileCoordinate, MoveTurn } from "Types/gameTypes";
-import { LevelData } from './../components/app/level_selection/LevelSelection';
+import { RootStateOrAny, useDispatch, useSelector } from "react-redux";
 import { GameObject } from './../__types/gameTypes';
+import { LevelData } from './../components/app/level_selection/LevelSelection';
 
 export const useAppTiles = () => {
 
-	const {
-		undoQueue,
-		redoQueue,
-	} : GameState = useSelector((state: RootStateOrAny) => state.gameReducer)
+	const undoQueue = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).undoQueue);
+
+	const redoQueue = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).redoQueue);
 
 	const dispatch = useDispatch();
 
@@ -18,12 +18,55 @@ export const useAppTiles = () => {
 		dispatch(gameActions.setGridSize(newSize));
 	}
 
-	const moveObject = (moveTurn: MoveTurn) => {
+	const moveElement = (moveTurn: MoveTurn) => {
 
-		dispatch(gameActions.moveObject(moveTurn));
+		const vehicleSelector = `${OBJECT_ID_PREFIX}${moveTurn.gameObject.key}`;
+
+		const vehicle = document.querySelector(`#${vehicleSelector}`) as HTMLElement;
+
+		if (!vehicle) {
+
+			return;
+		}
+
+		const { fromX, fromY, toX, toY } = moveTurn;
+
+		const xDifference = toX - fromX;
+		const yDifference = toY - fromY;
+
+		let xDifferenceInPx = 0;
+		let yDifferenceInPx = 0;
+
+		if (Boolean(xDifference)) {
+
+			xDifferenceInPx = (xDifference * 64) + (xDifference * 8);
+		}
+
+		if (Boolean(yDifference)) {
+
+			yDifferenceInPx = (yDifference * 64) + (yDifference * 8);
+		}
+
+		vehicle.style.transform = `translate(${xDifferenceInPx}px, ${yDifferenceInPx}px)`;
 	}
 
-	const selectObject = (gameObject: GameObject) => {
+	const moveObject = async (moveTurn: MoveTurn) => {
+
+		moveElement(moveTurn);
+
+		return new Promise((resolve) => {
+
+			setTimeout(() => {
+
+				dispatch(gameActions.moveObject(moveTurn));
+
+				resolve(true);
+
+			}, 125);
+		})
+	}
+
+	const selectObject = (gameObject: GameObject|null) => {
 
 		dispatch(gameActions.selectObject(gameObject));
 	}
@@ -73,18 +116,46 @@ export const useAppTiles = () => {
 		dispatch(gameActions.setTurnQueue(queue));
 	}
 
-	const undoLastMove = () => {
+	const undoLastMove = async () => {
 
 		const [ lastMove ] = undoQueue;
 
-		dispatch(gameActions.undoMoveObject(lastMove));
+		moveElement({
+			...lastMove,
+			fromX: lastMove.gameObject.xPosition,
+			fromY: lastMove.gameObject.yPosition,
+			toX: lastMove.fromX,
+			toY: lastMove.fromY,
+		});
+
+		return new Promise((resolve) => {
+
+			setTimeout(() => {
+
+				dispatch(gameActions.undoMoveObject(lastMove));
+
+				resolve(true);
+
+			}, 50);
+		})
 	}
 
-	const redoLastMove = () => {
+	const redoLastMove = async () => {
 
 		const [ lastMove ] = redoQueue;
 
-		dispatch(gameActions.redoMoveObject(lastMove));
+		moveElement(lastMove);
+
+		return new Promise((resolve) => {
+
+			setTimeout(() => {
+
+				dispatch(gameActions.redoMoveObject(lastMove));
+
+				resolve(true);
+
+			}, 125);
+		})
 	}
 
 	return {

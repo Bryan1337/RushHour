@@ -1,25 +1,21 @@
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Accordion, AccordionDetails, AccordionSummary, Box, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Box } from '@mui/material';
+import { GameState, MoveTurn } from 'Types/gameTypes';
 import React, { Fragment } from 'react';
 import { RootStateOrAny, useSelector } from 'react-redux';
-import { GameState, MoveTurn } from 'Types/gameTypes';
 import MoveItem from '../move/MoveItem';
 
 
 const TurnQueue = () => {
 
-	const gameState: GameState = useSelector((state: RootStateOrAny) => state.gameReducer);
-
-	const {
-		turnQueue,
-	} = gameState;
+	const turnQueue: GameState = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).turnQueue);
 
 	return (
 		<Accordion TransitionProps={{ unmountOnExit: true }}>
 			<AccordionSummary expandIcon={<ExpandMoreIcon />}>
-				<Typography>
+				<p>
 					Turn Queue ({turnQueue.length})
-				</Typography>
+				</p>
 			</AccordionSummary>
 			<AccordionDetails>
 				{turnQueue.map((moveTurn: MoveTurn, index) => (
@@ -29,9 +25,9 @@ const TurnQueue = () => {
 				))}
 				{!turnQueue.length && (
 					<Box display="flex" justifyContent="center">
-						<Typography variant="caption">
+						<p variant="caption">
 							No turn items in the queue
-						</Typography>
+						</p>
 					</Box>
 				)}
 			</AccordionDetails>

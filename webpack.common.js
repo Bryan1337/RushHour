@@ -1,9 +1,6 @@
 const HtmlWebPackPlugin = require('html-webpack-plugin');
-const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
-const CopyPlugin = require('copy-webpack-plugin');
-const RobotstxtPlugin = require('robotstxt-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
-const { ESBuildMinifyPlugin } = require('esbuild-loader');
+// const { ESBuildMinifyPlugin } = require('esbuild-loader');
 const path = require('path');
 
 
@@ -37,14 +34,14 @@ module.exports = {
             Workers: path.resolve(__dirname, 'src/workers'),
         }
     },
-    optimization: {
-        minimizer: [
-            new ESBuildMinifyPlugin({
-                target: 'es2015',
-                css: true,
-            })
-        ],
-    },
+    // optimization: {
+    //     minimizer: [
+    //         new ESBuildMinifyPlugin({
+    //             target: 'es2015',
+    //             css: true,
+    //         })
+    //     ],
+    // },
     module: {
         rules: [
             {
@@ -91,21 +88,6 @@ module.exports = {
             template: "./src/index.html",
             filename: "./index.html"
         }),
-        new CopyPlugin({
-            patterns: [{
-                from: './.htaccess',
-                to: './'
-            }]
-        }),
         new Dotenv(),
-        // new webpack.ProgressPlugin({
-        //     modules: true,
-        // }),
-        new RobotstxtPlugin({
-            userAgent: "*",
-            allow: "/",
-        }),
-        new NodePolyfillPlugin(),
-        // new BundleAnalyzerPlugin(),
     ],
 };

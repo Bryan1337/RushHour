@@ -1,5 +1,4 @@
 const webpack = require('webpack');
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const commonWebpackConfig = require('./webpack.common.js');
 const path = require('path');
 
@@ -7,7 +6,6 @@ module.exports = {
     ...commonWebpackConfig,
     entry: [
         '@babel/polyfill',
-        'react-refresh/runtime',
         './src/index.js',
     ],
     output: {
@@ -28,13 +26,10 @@ module.exports = {
     },
     devServer: {
         historyApiFallback: true,
-        disableHostCheck: true,
-        port: 1337,
+        port: 13338,
         hot: true,
     },
     plugins: [
         ...commonWebpackConfig.plugins,
-        new webpack.HotModuleReplacementPlugin(),
-        new ReactRefreshWebpackPlugin(),
     ]
 };

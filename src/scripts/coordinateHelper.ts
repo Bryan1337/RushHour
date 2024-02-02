@@ -1,19 +1,18 @@
-import { AppCarOrientations } from 'Types/gameTypes';
-import { TileDimensions } from './../__types/gameTypes';
+import { AppCarOrientations, TileDimensions } from "Types/gameTypes";
 
-export const getExitYPosition = (gridSize: number) => {
+export const getExitYPosition = (verticalSize: number) => {
 
-	return Math.floor(gridSize / 2) - 1;
+	return Math.floor(verticalSize / 2) - 1;
 }
 
-export const getDimension = (orientation: AppCarOrientations) : TileDimensions => {
+export const getDimension = (orientation: AppCarOrientations): TileDimensions => {
 
-	if(orientation === AppCarOrientations.Horizontal) {
+	if (orientation === AppCarOrientations.Horizontal) {
 
 		return TileDimensions.x;
 	}
 
-	if(orientation === AppCarOrientations.Vertical) {
+	if (orientation === AppCarOrientations.Vertical) {
 
 		return TileDimensions.y;
 	}

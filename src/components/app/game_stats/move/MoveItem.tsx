@@ -2,10 +2,10 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import { Avatar, Badge, Grid, Paper, Typography } from '@mui/material';
+import { Avatar, Badge, Grid, Paper } from '@mui/material';
 import { Box } from '@mui/system';
-import React from 'react';
 import { AppCarOrientations, MoveTurn } from 'Types/gameTypes';
+import React from 'react';
 
 
 interface MoveItemProperties {
@@ -40,12 +40,12 @@ const MoveItem = ({
 						</Grid>
 						<Grid container item xs display="flex" flexDirection="column">
 							<Grid item>
-								<Typography noWrap variant="body1" fontWeight={600}>
+								<p noWrap variant="body1" fontWeight={600}>
 									{moveTurn.gameObject.key}
-								</Typography>
+								</p>
 							</Grid>
 							<Grid item display="flex" alignItems="center">
-								<Typography noWrap variant="body1" display="flex" alignItems="center" pr={2} fontWeight={600}>
+								<p noWrap variant="body1" display="flex" alignItems="center" pr={2} fontWeight={600}>
 									{moveTurn.gameObject.orientation === AppCarOrientations.Horizontal && (
 										<>
 											{moveTurn.fromX > moveTurn.toX && (
@@ -74,10 +74,10 @@ const MoveItem = ({
 											)}
 										</>
 									)}
-								</Typography>
-								<Typography noWrap variant="caption">
+								</p>
+								<p noWrap variant="caption">
 									(X{moveTurn.fromX}:Y{moveTurn.fromY} to X{moveTurn.toX}:Y{moveTurn.toY})
-								</Typography>
+								</p>
 							</Grid>
 						</Grid>
 					</Grid>

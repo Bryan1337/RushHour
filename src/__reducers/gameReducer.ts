@@ -1,8 +1,8 @@
-import { AnyAction } from 'redux';
 import { getCoordinateTileKey, getDimension, getExitYPosition } from 'Scripts/coordinateHelper';
-import { AppCarOrientations, CreateGameProperties, GameObjectSizes, GameObjectTypes, GameState, GameTileCoordinate, GameTileMatrix2 } from 'Types/gameTypes';
-import { LevelData } from './../components/app/level_selection/LevelSelection';
+import { AppCarOrientations, CreateGameProperties, GameObjectSizes, GameObjectTypes, GameState, GameTile, GameTileMatrix2 } from 'Types/gameTypes';
+import { AnyAction } from 'redux';
 import { GameObject, MoveTurn } from './../__types/gameTypes';
+import { LevelData } from './../components/app/level_selection/LevelSelection';
 
 export const initialAppState: GameState = {
 	gridSize: 6,
@@ -11,7 +11,7 @@ export const initialAppState: GameState = {
 	gameTiles: {},
 	placementDirection: AppCarOrientations.Horizontal,
 	placementLength: GameObjectSizes.Small,
-	placementType: GameObjectTypes.Default,
+	placementType: GameObjectTypes.Vehicle,
 	gameObjects: {},
 	levelData: {},
 	turnQueue: [],
@@ -253,9 +253,9 @@ export const gameReducer = (state: GameState = initialAppState, action: AnyActio
 
 			const { gridSize, gameObjects } : CreateGameProperties = action.game;
 
-			const newGameObjects = {};
+			const newGameObjects: Record<string, GameObject> = {};
 
-			const gameTiles: GameTileMatrix2<GameTileCoordinate> = {}
+			const gameTiles: GameTileMatrix2<GameTile> = {}
 
 			Array.from({ length: gridSize }).forEach((_, yIndex) => {
 
@@ -270,7 +270,29 @@ export const gameReducer = (state: GameState = initialAppState, action: AnyActio
 
 			Object.keys(gameObjects).forEach((coordinate) => {
 
-				newGameObjects[coordinate] = gameObjects[coordinate];
+				const gameObject = gameObjects[coordinate];
+
+				newGameObjects[coordinate] = gameObject;
+
+				if(gameObject.orientation === AppCarOrientations.Horizontal) {
+
+					for(let xIndex = gameObject.xPosition; xIndex < gameObject.xPosition + gameObject.size; xIndex++) {
+
+						const coordinate = getCoordinateTileKey(xIndex, gameObject.yPosition);
+
+						gameTiles[coordinate].vehicleKey = gameObject.key;
+					}
+				}
+
+				if(gameObject.orientation === AppCarOrientations.Vertical) {
+
+					for(let yIndex = gameObject.yPosition; yIndex < gameObject.yPosition + gameObject.size; yIndex++) {
+
+						const coordinate = getCoordinateTileKey(gameObject.xPosition, yIndex);
+
+						gameTiles[coordinate].vehicleKey = gameObject.key;
+					}
+				}
 			})
 
 			const exitYPosition = getExitYPosition(gridSize);

@@ -2,27 +2,30 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import TextsmsIcon from '@mui/icons-material/Textsms';
 import ViewComfyIcon from '@mui/icons-material/ViewComfy';
-import { Button, ButtonGroup, Grid, Paper, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import { Button, ButtonGroup, Grid, Paper, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { Box } from '@mui/system';
 import { useAppTiles } from 'Hooks/useAppTiles';
 import { useCreator } from 'Hooks/useCreator';
 import { useGame } from 'Hooks/useGame';
 import { useGameObject } from 'Hooks/useGameObject';
 import { usePlacement } from 'Hooks/usePlacement';
+import { AppCarOrientations, CreateGameProperties, GameObjectSizes, GameObjectTypes, GameState, GameTileCoordinate } from 'Types/gameTypes';
 import React, { useEffect } from 'react';
 import { RootStateOrAny, useSelector } from 'react-redux';
-import { AppCarOrientations, CreateGameProperties, GameObjectSizes, GameObjectTypes, GameState, GameTileCoordinate } from 'Types/gameTypes';
 
 const MapCreator = () => {
 
-	const {
-		gridSize,
-		gameObjects,
-		selectedTile,
-		placementLength,
-		placementType,
-		placementDirection,
-	}: GameState = useSelector((state: RootStateOrAny) => state.gameReducer);
+	const gridSize = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).gridSize);
+
+	const gameObjects = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).gameObjects);
+
+	const selectedTile = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).selectedTile);
+
+	const placementLength = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).placementLength);
+
+	const placementType = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).placementType);
+
+	const placementDirection = useSelector((state: RootStateOrAny) => (state.gameReducer as GameState).placementDirection);
 
 	const {
 		importString,
@@ -100,19 +103,13 @@ const MapCreator = () => {
 
 	const handleKeyboardMove = (e: KeyboardEvent) => {
 
-		console.log({
-			e
-		})
-
-		if(!selectedTile)
-		{
+		if (!selectedTile) {
 			return;
 		}
 
 		const { xPosition, yPosition } = selectedTile as GameTileCoordinate;
 
-		console.log(e)
-		switch(e.key) {
+		switch (e.key) {
 			case KeyboardArrowKeys.ArrowUp:
 				setSelectedTile({
 					xPosition,
@@ -149,21 +146,21 @@ const MapCreator = () => {
 			window.removeEventListener("keydown", handleKeyboardMove);
 		}
 
-	}, [ selectedTile ])
+	}, [selectedTile])
 
 
 	return (
 		<Box pr={3}>
 			<Paper>
 				<Box p={3}>
-					<Typography
+					<p
 						variant="h5"
 						pb={2}>
 						Editor
-					</Typography>
-					<Typography pb={2}>
+					</p>
+					<p pb={2}>
 						Grid size ({gridSize})
-					</Typography>
+					</p>
 					<Box>
 						<ButtonGroup size="small" fullWidth>
 							<Button onClick={() => setGridSize(gridSize - 1)} variant="outlined">
@@ -174,9 +171,9 @@ const MapCreator = () => {
 							</Button>
 						</ButtonGroup>
 					</Box>
-					<Typography py={2}>
+					<p py={2}>
 						Vehicle orientation
-					</Typography>
+					</p>
 					<Box>
 						<ToggleButtonGroup
 							value={placementDirection}
@@ -191,9 +188,9 @@ const MapCreator = () => {
 							</ToggleButton>
 						</ToggleButtonGroup>
 					</Box>
-					<Typography py={2}>
+					<p py={2}>
 						Object size
-					</Typography>
+					</p>
 					<Box>
 						<ToggleButtonGroup
 							value={placementLength}
@@ -220,9 +217,9 @@ const MapCreator = () => {
 							</ToggleButton>
 						</ToggleButtonGroup>
 					</Box>
-					<Typography py={2}>
+					<p py={2}>
 						Object type
-					</Typography>
+					</p>
 					<Box>
 						<ToggleButtonGroup
 							value={placementType}
@@ -232,23 +229,23 @@ const MapCreator = () => {
 							<ToggleButton size="small" value={GameObjectTypes.Player}>
 								Player
 							</ToggleButton>
-							<ToggleButton size="small" value={GameObjectTypes.Default}>
-								Default
+							<ToggleButton size="small" value={GameObjectTypes.Vehicle}>
+								Vehicle
 							</ToggleButton>
 							<ToggleButton size="small" value={GameObjectTypes.Wall}>
 								Wall
 							</ToggleButton>
 						</ToggleButtonGroup>
 					</Box>
-					<Typography py={2}>
+					<p py={2}>
 						Selected tile
-					</Typography>
+					</p>
 					{selectedTile && <>
 						<Box textAlign="center">
-							<Typography
+							<p
 								variant="h5">
 								{selectedTile.xPosition}:{selectedTile.yPosition}
-							</Typography>
+							</p>
 						</Box>
 						<Grid
 							container

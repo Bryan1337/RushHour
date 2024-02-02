@@ -1,3 +1,4 @@
+import { lighten } from '@mui/material/styles';
 
 export const getRandomHexColor = () => {
 
@@ -53,4 +54,9 @@ export function hexToHSL(H) {
 		s,
 		l
 	}
+}
+
+export const getBackgroundGradient = (color: string) => {
+
+	return `linear-gradient(146deg, ${color} 0%, ${lighten(color as string, .4)} 100%)`;
 }

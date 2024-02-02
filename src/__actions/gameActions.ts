@@ -1,13 +1,13 @@
 import { AppCarOrientations, CreateGameProperties, GameObjectTypes, GameTileCoordinate, MoveTurn } from 'Types/gameTypes';
-import { LevelData } from './../components/app/level_selection/LevelSelection';
 import { GameObject } from './../__types/gameTypes';
+import { LevelData } from './../components/app/level_selection/LevelSelection';
 
 export const setPlacementType = (placementType: GameObjectTypes) => ({
 	type: 'SET_PLACEMENT_TYPE',
 	placementType,
 })
 
-export const selectObject = (gameObject: GameObject) => ({
+export const selectObject = (gameObject: GameObject | null) => ({
 	type: 'SELECT_OBJECT',
 	gameObject
 })
@@ -69,5 +69,15 @@ export const setTurnQueue = (queue: Array<MoveTurn>) => ({
 
 export const setGridSize = (size: number) => ({
 	type: 'SET_GRID_SIZE',
+	size,
+})
+
+export const setHorizontalGridSize = (size: number) => ({
+	type: 'SET_HORIZONTAL_GRID_SIZE',
+	size,
+})
+
+export const setVerticalGridSize = (size: number) => ({
+	type: 'SET_VERTICAL_GRID_SIZE',
 	size,
 })

@@ -1,6 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@500&display=swap');
+
 html {
     background: #333333 !important;
     height: 100%;
+    font-family: 'Inconsolata' !important;
+}
+
+p {
+    font-family: 'Inconsolata' !important;
+    font-size: 16px;
+    color: #fff;
+}
+
+strong {
+    font-weight: 700;
+    font-size: 20px !important;
+    color: #fff !important;
 }
 
 body {
@@ -441,3 +456,50 @@ textarea {
 #root {
     height: 100%;
 }
+
+
+@keyframes pulse-growth {
+    0% {
+        box-shadow: 0 0 0 0px rgba(0, 255, 55, 0.4);
+    }
+
+    100% {
+        box-shadow: 0 0 0 4px rgba(0, 255, 55, 0);
+    }
+}
+
+@keyframes stroke-growth {
+    0% {
+        stroke-width: 0px;
+        stroke-opacity: 100%;
+        }
+
+    75% {
+        stroke-width: 8px;
+        stroke-opacity: 0%;
+    }
+
+    100% {
+        stroke-width: 8px;
+        stroke-opacity: 0%;
+    }
+}
+
+@keyframes updown {
+    0% {
+        transform: translateY(-8px);
+    }
+
+    50% {
+        transform: translateY(0px);
+    }
+
+    100% {
+        transform: translateY(-8px);
+    }
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Contrail+One&family=Permanent+Marker&display=swap');
+
+
+/* backgroundColor: '#ff9f0f', */

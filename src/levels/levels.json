@@ -6,19 +6,23 @@
 		"achievements": [
 			{
 				"turns": 16,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 31,
-				"rank": "Gold"
+				"rank": "Gold",
+				"score": 90
 			},
 			{
 				"turns": 46,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 61,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -29,7 +33,8 @@
 		"achievements": [
 			{
 				"turns": 14,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 29,
@@ -37,11 +42,13 @@
 			},
 			{
 				"turns": 44,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 59,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -52,7 +59,8 @@
 		"achievements": [
 			{
 				"turns": 34,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 49,
@@ -60,11 +68,13 @@
 			},
 			{
 				"turns": 64,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 79,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -75,7 +85,8 @@
 		"achievements": [
 			{
 				"turns": 22,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 37,
@@ -83,11 +94,13 @@
 			},
 			{
 				"turns": 52,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 67,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -98,7 +111,8 @@
 		"achievements": [
 			{
 				"turns": 35,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 50,
@@ -106,11 +120,13 @@
 			},
 			{
 				"turns": 65,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 80,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -121,7 +137,8 @@
 		"achievements": [
 			{
 				"turns": 30,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 45,
@@ -129,11 +146,13 @@
 			},
 			{
 				"turns": 60,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 75,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -144,7 +163,8 @@
 		"achievements": [
 			{
 				"turns": 21,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 36,
@@ -152,11 +172,13 @@
 			},
 			{
 				"turns": 51,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 66,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -167,7 +189,8 @@
 		"achievements": [
 			{
 				"turns": 27,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 42,
@@ -175,11 +198,13 @@
 			},
 			{
 				"turns": 57,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 72,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -190,7 +215,8 @@
 		"achievements": [
 			{
 				"turns": 23,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 38,
@@ -198,11 +224,13 @@
 			},
 			{
 				"turns": 53,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 68,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -213,7 +241,8 @@
 		"achievements": [
 			{
 				"turns": 23,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 38,
@@ -221,11 +250,13 @@
 			},
 			{
 				"turns": 53,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 68,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -236,7 +267,8 @@
 		"achievements": [
 			{
 				"turns": 56,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 71,
@@ -244,11 +276,13 @@
 			},
 			{
 				"turns": 86,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 101,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -259,7 +293,8 @@
 		"achievements": [
 			{
 				"turns": 33,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 48,
@@ -267,11 +302,13 @@
 			},
 			{
 				"turns": 63,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 78,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -282,7 +319,8 @@
 		"achievements": [
 			{
 				"turns": 32,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 47,
@@ -290,11 +328,13 @@
 			},
 			{
 				"turns": 62,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 77,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -305,7 +345,8 @@
 		"achievements": [
 			{
 				"turns": 34,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 49,
@@ -313,11 +354,13 @@
 			},
 			{
 				"turns": 64,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 79,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -328,7 +371,8 @@
 		"achievements": [
 			{
 				"turns": 32,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 47,
@@ -336,11 +380,13 @@
 			},
 			{
 				"turns": 62,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 77,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -351,7 +397,8 @@
 		"achievements": [
 			{
 				"turns": 41,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 66,
@@ -359,11 +406,13 @@
 			},
 			{
 				"turns": 71,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 96,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -374,7 +423,8 @@
 		"achievements": [
 			{
 				"turns": 47,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 62,
@@ -382,11 +432,13 @@
 			},
 			{
 				"turns": 77,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 92,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -397,7 +449,8 @@
 		"achievements": [
 			{
 				"turns": 60,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 75,
@@ -405,11 +458,13 @@
 			},
 			{
 				"turns": 90,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 105,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -420,7 +475,8 @@
 		"achievements": [
 			{
 				"turns": 56,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 71,
@@ -428,11 +484,13 @@
 			},
 			{
 				"turns": 86,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 101,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -443,7 +501,8 @@
 		"achievements": [
 			{
 				"turns": 18,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 33,
@@ -451,11 +510,13 @@
 			},
 			{
 				"turns": 48,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 63,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -466,7 +527,8 @@
 		"achievements": [
 			{
 				"turns": 49,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 64,
@@ -474,11 +536,13 @@
 			},
 			{
 				"turns": 79,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 94,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -489,7 +553,8 @@
 		"achievements": [
 			{
 				"turns": 46,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 61,
@@ -497,11 +562,13 @@
 			},
 			{
 				"turns": 76,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 91,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -512,7 +579,8 @@
 		"achievements": [
 			{
 				"turns": 49,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 64,
@@ -520,11 +588,13 @@
 			},
 			{
 				"turns": 79,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 94,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -535,7 +605,8 @@
 		"achievements": [
 			{
 				"turns": 50,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 65,
@@ -543,11 +614,13 @@
 			},
 			{
 				"turns": 80,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 95,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -558,7 +631,8 @@
 		"achievements": [
 			{
 				"turns": 52,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 67,
@@ -566,11 +640,13 @@
 			},
 			{
 				"turns": 82,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 97,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -581,7 +657,8 @@
 		"achievements": [
 			{
 				"turns": 49,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 64,
@@ -589,11 +666,13 @@
 			},
 			{
 				"turns": 79,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 94,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -604,7 +683,8 @@
 		"achievements": [
 			{
 				"turns": 57,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 72,
@@ -612,11 +692,13 @@
 			},
 			{
 				"turns": 87,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 102,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -627,7 +709,8 @@
 		"achievements": [
 			{
 				"turns": 51,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 67,
@@ -635,11 +718,13 @@
 			},
 			{
 				"turns": 82,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 97,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -650,7 +735,8 @@
 		"achievements": [
 			{
 				"turns": 54,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 69,
@@ -658,11 +744,13 @@
 			},
 			{
 				"turns": 84,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 99,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -673,7 +761,8 @@
 		"achievements": [
 			{
 				"turns": 55,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 70,
@@ -681,11 +770,13 @@
 			},
 			{
 				"turns": 85,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 100,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -696,7 +787,8 @@
 		"achievements": [
 			{
 				"turns": 69,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 86,
@@ -704,11 +796,13 @@
 			},
 			{
 				"turns": 99,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 116,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -719,7 +813,8 @@
 		"achievements": [
 			{
 				"turns": 62,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 77,
@@ -727,11 +822,13 @@
 			},
 			{
 				"turns": 92,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 107,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -742,7 +839,8 @@
 		"achievements": [
 			{
 				"turns": 77,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 92,
@@ -750,11 +848,13 @@
 			},
 			{
 				"turns": 107,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 122,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -765,7 +865,8 @@
 		"achievements": [
 			{
 				"turns": 71,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 86,
@@ -773,11 +874,13 @@
 			},
 			{
 				"turns": 101,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 116,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -788,7 +891,8 @@
 		"achievements": [
 			{
 				"turns": 75,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 90,
@@ -796,11 +900,13 @@
 			},
 			{
 				"turns": 105,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 120,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -811,7 +917,8 @@
 		"achievements": [
 			{
 				"turns": 63,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 78,
@@ -819,11 +926,13 @@
 			},
 			{
 				"turns": 93,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 108,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -834,7 +943,8 @@
 		"achievements": [
 			{
 				"turns": 65,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 80,
@@ -842,11 +952,13 @@
 			},
 			{
 				"turns": 95,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 110,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -857,7 +969,8 @@
 		"achievements": [
 			{
 				"turns": 77,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 92,
@@ -865,11 +978,13 @@
 			},
 			{
 				"turns": 107,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 122,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -880,7 +995,8 @@
 		"achievements": [
 			{
 				"turns": 81,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 97,
@@ -888,11 +1004,13 @@
 			},
 			{
 				"turns": 111,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 127,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -903,7 +1021,8 @@
 		"achievements": [
 			{
 				"turns": 82,
-				"rank": "Platinum"
+				"rank": "Platinum",
+				"score": 100
 			},
 			{
 				"turns": 97,
@@ -911,11 +1030,13 @@
 			},
 			{
 				"turns": 112,
-				"rank": "Silver"
+				"rank": "Silver",
+				"score": 70
 			},
 			{
 				"turns": 127,
-				"rank": "Bronze"
+				"rank": "Bronze",
+				"score": 50
 			}
 		]
 	},
@@ -947,14 +1068,6 @@
 		"text": "Level 44 (Walls)",
 		"level": "Master",
 		"game": "NkBBQS5CQ186REREQkMuOkVYWEYuLjpFLkdGSEg6Li5HSUlKOi5LSy5fSjo=",
-		"achievements": [
-
-		]
-	},
-	{
-		"text": "Test level",
-		"level": "Test",
-		"game": "N0AuLi4uLi4uOi4uQUJDREU6WFhBQkNERTouLkFCQ0RFOi4uRkYuLi46Li5HRy4uLjouLkhILi4uOg==",
 		"achievements": [
 
 		]
